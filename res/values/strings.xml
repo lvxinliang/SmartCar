@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="hello">hanry</string>
+    <string name="STATE_ERROR">状态异常, 无法发送命令 ....</string>
+    <string name="app_name">SmartCar</string>
+    <string name="title_activity_wifi_car_settings">小车设置</string>
+</resources>
