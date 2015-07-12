@@ -1,109 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:orientation="vertical"
-    android:layout_width="fill_parent" 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fontawesometext="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="@color/white"
+    android:orientation="vertical" >
 
     <com.hanry.MjpegView
         android:id="@+id/mySurfaceView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentRight="true" />
-    
-    <ImageButton android:id="@+id/btnLeft" 
-        android:src="@drawable/sym_left"
-        android:background="#00000000"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_gravity="left"
+        android:layout_alignParentRight="true"
+        android:background="@color/white" />
+
+    <com.hanry.views.FrontAndBackJoystickView
+        android:id="@+id/frontAndBackJoystickView"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40dp" />
-    
-    <ImageButton android:id="@+id/btnBack" 
-		android:src="@drawable/sym_backward"
-        android:background="#00000000"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-		android:layout_toRightOf="@id/btnLeft"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="center_horizontal" />
 
+    <com.hanry.views.LeftAndRightJoystickView
+        android:id="@+id/leftAndRightJoystickView"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_horizontal" />
 
-   
-    <ImageButton android:id="@+id/btnStop"
-		android:src="@drawable/sym_stop"
-        android:background="#00000000"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_alignLeft="@id/btnBack"
-        android:layout_above="@id/btnBack"/>
-    
-    
-    <ImageButton android:id="@+id/btnRight"
-        android:src="@drawable/sym_right"
-        android:background="#00000000"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_alignTop="@id/btnLeft"
-        android:layout_toRightOf="@id/btnStop" />
-  
-    	
-    <ImageButton android:id="@+id/btnForward"
-		android:src="@drawable/sym_forward"
-        android:background="#00000000"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_alignLeft="@id/btnBack"
-        android:layout_above="@id/btnStop"/>
+    <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/buttonSetting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-cog" />
 
-   <ImageButton android:id="@+id/ButtonCus1" 
-		android:src="@drawable/sym_setting"
-        android:background="#00000000"
+    <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/ButtonTakePic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_gravity="left" />
-   
-   <ImageView android:id="@+id/btnIndicator" 
-		android:src="@drawable/sym_indicator"
-        android:background="#00000000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" 
-        android:layout_alignParentTop="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-camera" />
 
-   <ImageButton android:id="@+id/ButtonTakePic" 
-		android:src="@drawable/take_pic"
-        android:background="#00000000"
+    <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/btnIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ButtonTakePic"
+        android:layout_toLeftOf="@+id/ButtonTakePic"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-video-camera" />
+
+    <TextView
+        android:id="@+id/logTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/ButtonTakePic"
+        android:layout_toRightOf="@+id/ButtonTakePic" />
+
+    <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/btnLen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/btnIndicator" />
-      
-   <TextView android:id="@+id/logTextView"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_above="@+id/gear1"
-          android:layout_toLeftOf="@+id/btnLen"
-          android:layout_toRightOf="@+id/btnIndicator"
-          android:text="..."
-          android:textSize="10sp" />
+        android:layout_margin="10dp"
+        android:layout_marginRight="42dp"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-lightbulb-o" />
 
-   <ImageButton
-       android:id="@+id/btnLen"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_alignParentRight="true"
-       android:layout_alignParentTop="true"
-       android:layout_marginRight="42dp"
-       android:background="#00000000"
-       android:src="@drawable/sym_light_off" />
+    <com.hanry.SeekBar
+        android:id="@+id/gear1"
+        android:layout_width="30dp"
+        android:layout_height="250dp"
+        android:layout_alignRight="@+id/btnLen"
+        android:layout_below="@+id/btnLen" />
 
-   <com.hanry.SeekBar
-       android:id="@+id/gear1"
-       android:layout_width="30dp"
-       android:layout_height="250dp"
-       android:layout_above="@+id/btnBack"
-       android:layout_alignRight="@+id/btnLen"
-       android:layout_below="@+id/btnLen" />
-    
 </RelativeLayout>

@@ -1,11 +1,11 @@
 package com.hanry;
 import java.io.BufferedInputStream;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.net.wifi.WifiInfo;
@@ -15,25 +15,25 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hanry.Constant;
-import com.hanry.R;
-import com.hanry.WifiCarSettings;
+import com.beardedhen.androidbootstrap.FontAwesomeText;
 import com.hanry.Constant.CommandArray;
+import com.hanry.views.FrontAndBackJoystickView;
+import com.hanry.views.FrontAndBackJoystickView.OnFrontAndBackJoystickMoveListener;
+import com.hanry.views.LeftAndRightJoystickView;
+import com.hanry.views.LeftAndRightJoystickView.OnLeftAndRightJoystickMoveListener;
 
 public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
 {
-    private final int MSG_ID_ERR_CONN = 1001;
+    protected static final String TAG = "MainActivity";
+	private final int MSG_ID_ERR_CONN = 1001;
     //private final int MSG_ID_ERR_SEND = 1002;
     private final int MSG_ID_ERR_RECEIVE = 1003;
     private final int MSG_ID_CON_READ = 1004;
@@ -77,34 +77,18 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
     private int ROUTER_CONTROL_PORT_TEST = 2001;
     private final String WIFI_SSID_PERFIX = "robot";
     
-    private ImageButton ForWard;
-    private ImageButton BackWard;
-    private ImageButton TurnLeft;
-    private ImageButton TurnRight;
-    private ImageButton TakePicture;
+    private FontAwesomeText TakePicture;
     
-    private ImageView mAnimIndicator;
+    private FontAwesomeText mAnimIndicator;
     private boolean bAnimationEnabled = true;
-    private Drawable mWarningIcon;
     private boolean bReaddyToSendCmd = false;
     private TextView mLogText;
-  
-    private Drawable ForWardon;
-    private Drawable ForWardoff;
-    private Drawable BackWardon;
-    private Drawable BackWardoff;
-    private Drawable TurnLefton;
-    private Drawable TurnLeftoff;
-    private Drawable TurnRighton;
-    private Drawable TurnRightoff;
-    private Drawable buttonLenon;
-    private Drawable buttonLenoff;
     
     private SeekBar mSeekBar;
     private int  mSeekBarValue = -1;
     
-    private ImageButton buttonCus1;
-    private ImageButton buttonLen;
+    private FontAwesomeText buttonSetting;
+    private FontAwesomeText buttonLen;
     private boolean bLenon = false;
     private int mWifiStatus = STATUS_INIT;
 
@@ -119,6 +103,12 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
     private Context mContext;
     SocketClient mtcpSocket;
     MjpegView backgroundView = null;
+	private int leftAndRightPower;
+	private int leftAndRightDirection;
+	private int frontAndBackPower;
+	private int frontAndBackDirection;
+	private byte[] lastFrontAndBackCommand = {0};
+	private byte[] lastLeftAndRightCommand = {0};
     
     private byte[] COMM_FORWARD = {(byte) 0xFF, (byte)0x00, (byte)0x01, (byte)0x00, (byte) 0xFF};
     private byte[] COMM_BACKWARD = {(byte) 0xFF, 0x00, 0x02, 0x00, (byte) 0xFF};
@@ -136,7 +126,8 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
 
     private byte[] COMM_HEART_BREAK = {(byte) 0xFF, (byte)0xEE, (byte)0xE1, 0x00, (byte) 0xFF};
     
-    
+    private FrontAndBackJoystickView frontAndBackJoystick; 
+    private LeftAndRightJoystickView leftAndRightJoystick; 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -148,41 +139,75 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
 
-        ForWard= (ImageButton)findViewById(R.id.btnForward);
-        TurnLeft= (ImageButton)findViewById(R.id.btnLeft);
-        TurnRight=(ImageButton)findViewById(R.id.btnRight);
-        BackWard= (ImageButton)findViewById(R.id.btnBack);
-
-        buttonCus1= (ImageButton)findViewById(R.id.ButtonCus1);
-        buttonCus1.setOnClickListener(buttonCus1ClickListener);
-        buttonCus1.setOnLongClickListener(buttonCus1ClickListener2);
+        buttonSetting = (FontAwesomeText) findViewById(R.id.buttonSetting);
+        buttonSetting.setOnClickListener(buttonSettingClickListener);
+        buttonSetting.setOnLongClickListener(buttonSettingClickListener2);
         
-        buttonLen= (ImageButton)findViewById(R.id.btnLen);
+        buttonLen = (FontAwesomeText)findViewById(R.id.btnLen);
         buttonLen.setOnClickListener(buttonLenClickListener);
         buttonLen.setLongClickable(true);
         
-        TakePicture = (ImageButton)findViewById(R.id.ButtonTakePic);
+        TakePicture = (FontAwesomeText)findViewById(R.id.ButtonTakePic);
         TakePicture.setOnClickListener(buttonTakePicClickListener);
-        mAnimIndicator = (ImageView)findViewById(R.id.btnIndicator);
-        mWarningIcon = getResources().getDrawable(R.drawable.sym_indicator1);
-        
-        ForWardon = getResources().getDrawable(R.drawable.sym_forward_1);
-        ForWardoff = getResources().getDrawable(R.drawable.sym_forward);
-        
-        TurnLefton = getResources().getDrawable(R.drawable.sym_left_1);
-        TurnLeftoff = getResources().getDrawable(R.drawable.sym_left);
-        
-        TurnRighton = getResources().getDrawable(R.drawable.sym_right_1);
-        TurnRightoff = getResources().getDrawable(R.drawable.sym_right);
-        
-        BackWardon = getResources().getDrawable(R.drawable.sym_backward_1);
-        BackWardoff = getResources().getDrawable(R.drawable.sym_backward);
-        
-        buttonLenon = getResources().getDrawable(R.drawable.sym_light);
-        buttonLenoff = getResources().getDrawable(R.drawable.sym_light_off);
-        
+        mAnimIndicator = (FontAwesomeText)findViewById(R.id.btnIndicator);
         
         backgroundView = (MjpegView)findViewById(R.id.mySurfaceView1); 
+        
+        frontAndBackJoystick = (FrontAndBackJoystickView)findViewById(R.id.frontAndBackJoystickView);
+        leftAndRightJoystick = (LeftAndRightJoystickView)findViewById(R.id.leftAndRightJoystickView);
+        
+        frontAndBackJoystick.setOnFrontAndBackJoystickMoveListener(new OnFrontAndBackJoystickMoveListener() {
+			public void onValueChanged(int power, int direction) {
+        		frontAndBackDirection = direction;
+        		frontAndBackPower = power;
+        		if(frontAndBackPower != 0){
+    				if (frontAndBackDirection == FrontAndBackJoystickView.FRONT) {
+    					if(COMM_FORWARD != lastFrontAndBackCommand){
+							sendCommand(COMM_FORWARD);
+							lastFrontAndBackCommand = COMM_FORWARD;
+    					}
+    				}else if(frontAndBackDirection == FrontAndBackJoystickView.BACK){
+    					if(COMM_BACKWARD != lastFrontAndBackCommand){
+    						sendCommand(COMM_BACKWARD);
+    						lastFrontAndBackCommand = COMM_BACKWARD;
+    					}
+    				}
+        		}
+			}
+			public void OnReleased(){
+				frontAndBackDirection = FrontAndBackJoystickView.ORIGIN;
+				frontAndBackPower = 0;
+                sendCommand(COMM_STOP);
+			}
+			public void OnReturnedToCenter(){}
+		});
+        leftAndRightJoystick.setOnLeftAndRightJoystickMoveListener(new OnLeftAndRightJoystickMoveListener() {
+
+			public void onValueChanged(int power, int direction) {
+        		leftAndRightDirection = direction;
+        		leftAndRightPower = power;
+        		if(leftAndRightPower != 0){
+					if (LeftAndRightJoystickView.LEFT == leftAndRightDirection) {
+    					if(COMM_LEFT != lastLeftAndRightCommand){
+    						sendCommand(COMM_LEFT);
+    						lastLeftAndRightCommand = COMM_LEFT;
+    					}
+					}else if(LeftAndRightJoystickView.RIGHT == leftAndRightDirection){
+						if(COMM_RIGHT != lastLeftAndRightCommand){
+							sendCommand(COMM_RIGHT);
+							lastLeftAndRightCommand = COMM_RIGHT;
+						}
+					}
+        		}
+        	}
+			public void OnReleased() {
+				frontAndBackDirection = LeftAndRightJoystickView.ORIGIN;
+				frontAndBackPower = 0;
+                sendCommand(COMM_STOP);
+			}
+
+			public void OnReturnedToCenter() {}
+        });
         
         mLogText = (TextView)findViewById(R.id.logTextView);
         if (null != mLogText) {
@@ -199,91 +224,6 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         //connect  
         connectToRouter(m4test);
         
-        ForWard.setOnTouchListener(new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                switch(action)
-                {
-                case MotionEvent.ACTION_DOWN:
-                    sendCommand(COMM_FORWARD);
-                    ForWard.setImageDrawable(ForWardon);
-                    ForWard.invalidateDrawable(ForWardon);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    sendCommand(COMM_STOP);
-                    ForWard.setImageDrawable(ForWardoff);
-                    ForWard.invalidateDrawable(ForWardoff);
-                    break;                 
-                }
-                
-                return false;
-            }
-        });
-        
-        BackWard.setOnTouchListener(new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                switch(action)
-                {
-                case MotionEvent.ACTION_DOWN:
-                    sendCommand(COMM_BACKWARD);
-                    BackWard.setImageDrawable(BackWardon);
-                    BackWard.invalidateDrawable(BackWardon);
-                    break;                    
-                case MotionEvent.ACTION_UP:
-                    sendCommand(COMM_STOP);
-                    BackWard.setImageDrawable(BackWardoff);
-                    BackWard.invalidateDrawable(BackWardoff);
-                    break;
-                }
-                return false;
-            }
-                    
-        });
-        
-        TurnRight.setOnTouchListener(new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                switch(action)
-                {
-                case MotionEvent.ACTION_DOWN:
-                    sendCommand(COMM_RIGHT);
-                    TurnRight.setImageDrawable(TurnRighton);
-                    TurnRight.invalidateDrawable(TurnRighton);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    sendCommand(COMM_STOP);
-                    TurnRight.setImageDrawable(TurnRightoff);
-                    TurnRight.invalidateDrawable(TurnRightoff);
-                    break;
-                }
-                return false;
-            }
-        });
-        
-        TurnLeft.setOnTouchListener(new View.OnTouchListener() 
-        {
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getAction();
-                switch(action)
-                {
-                case MotionEvent.ACTION_DOWN:
-                    sendCommand(COMM_LEFT);
-                    TurnLeft.setImageDrawable(TurnLefton);
-                    TurnLeft.invalidateDrawable(TurnLefton);
-                    break;
-                case MotionEvent.ACTION_UP:     
-                    sendCommand(COMM_STOP);
-                    TurnLeft.setImageDrawable(TurnLeftoff);
-                    TurnLeft.invalidateDrawable(TurnLeftoff);
-                    break;
-                }
-                return false;
-            }
-        });
     }
 
     private OnClickListener buttonLenClickListener = new OnClickListener() {
@@ -291,13 +231,11 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
               if (bLenon) {
                   bLenon = false;
                   sendCommand(COMM_LEN_OFF);
-                  buttonLen.setImageDrawable(buttonLenoff);
-                  buttonLen.invalidateDrawable(buttonLenon);
+                  buttonLen.setTextColor(Color.BLACK);
               } else  {
                   bLenon = true;
                   sendCommand(COMM_LEN_ON);
-                  buttonLen.setImageDrawable(buttonLenon);
-                  buttonLen.invalidateDrawable(buttonLenon);
+                  buttonLen.setTextColor(Color.YELLOW);
               }
             
         }
@@ -311,7 +249,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         }
     };
     
-    private OnClickListener buttonCus1ClickListener = new OnClickListener() {
+    private OnClickListener buttonSettingClickListener = new OnClickListener() {
         public void onClick(View arg0) {       
             Intent setIntent = new Intent();
             setIntent.setClass(mContext, WifiCarSettings.class);
@@ -319,7 +257,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         }
     };
     
-    private OnLongClickListener buttonCus1ClickListener2 = new OnLongClickListener() {
+    private OnLongClickListener buttonSettingClickListener2 = new OnLongClickListener() {
         public boolean onLongClick(View arg0) {
             mThreadFlag = false;
             try {
@@ -442,7 +380,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             	backgroundView.setSource(cameraUrl);//初始化Camera
             }
         } else if (WIFI_STATE_NOT_CONNECTED == status) {
-            mLogText.setText("初始化连接路由器失败，wifi未连接，或者路由器状态异常！！");
+            mLogText.setText("初始化连接路由器失败，wifi未连接，或者路由器状态异常！");
         } else {
             mLogText.setText("初始化连接路由器失败，wifi未开启，请手动开启后重试！");
         }
@@ -670,26 +608,21 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         @Override
         public void handleMessage(Message msg) {
             if (mIconAnimationState) {
-                mAnimIndicator.setAlpha(255);
                 if (isIconAnimationEnabled()) {
                     mAnimationHandler.sendEmptyMessageDelayed(0, WARNING_ICON_ON_DURATION_MSEC);
                 }
             } else {
-                mAnimIndicator.setAlpha(0);
                 if (isIconAnimationEnabled()) {
                     mAnimationHandler.sendEmptyMessageDelayed(0, WARNING_ICON_OFF_DURATION_MSEC);
                 }
             }
             mIconAnimationState = !mIconAnimationState;
-            mAnimIndicator.invalidateDrawable(mWarningIcon);
+            mAnimIndicator.setTextColor(Color.GREEN);
         }
     };
     
     private void startIconAnimation() {
         Log.i("Animation", "startIconAnimation handler : " + mAnimationHandler);
-        if (mAnimIndicator != null) {
-            mAnimIndicator.setImageDrawable(mWarningIcon);
-        }
         if (isIconAnimationEnabled())
             mAnimationHandler.sendEmptyMessageDelayed(0, WARNING_ICON_ON_DURATION_MSEC);
     }
@@ -765,7 +698,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             finish();
         } else {
             mQuitFlag = true;
-            Toast.makeText(mContext, "++请再次按返回键退出应用++", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "请再次按返回键退出应用", Toast.LENGTH_LONG).show();
             Message msg = new Message();    
             msg.what = MSG_ID_CLEAR_QUIT_FLAG;
             mHandler.sendMessageDelayed(msg, QUIT_BUTTON_PRESS_INTERVAL);
@@ -775,35 +708,25 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
     void initSettings () {
 		 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		 
-		 String CameraUrl = settings.getString(Constant.PREF_KEY_CAMERA_URL, Constant.DEFAULT_VALUE_CAMERA_URL);
-		 CAMERA_VIDEO_URL = CameraUrl;
-		 CameraUrl = settings.getString(Constant.PREF_KEY_CAMERA_URL_TEST, Constant.DEFAULT_VALUE_CAMERA_URL_TEST);
-		 CAMERA_VIDEO_URL_TEST = CameraUrl;		 
+		 CAMERA_VIDEO_URL = settings.getString(Constant.PREF_KEY_CAMERA_URL, Constant.DEFAULT_VALUE_CAMERA_URL);
+		 CAMERA_VIDEO_URL_TEST = settings.getString(Constant.PREF_KEY_CAMERA_URL_TEST, Constant.DEFAULT_VALUE_CAMERA_URL_TEST);
 		 
 		 String RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL, Constant.DEFAULT_VALUE_ROUTER_URL);
 		 int index = RouterUrl.indexOf(":");
-		 String routerIP = "";
 		 String routerPort = "";
-		 int port = 0;
 		 if (index > 0) {
-			 routerIP = RouterUrl.substring(0, index);
+			 ROUTER_CONTROL_URL = RouterUrl.substring(0, index);
 			 routerPort = RouterUrl.substring(index+1, RouterUrl.length() );
-			 port = Integer.parseInt(routerPort);
+			 ROUTER_CONTROL_PORT = Integer.parseInt(routerPort);
 		 }
-		 
-		 ROUTER_CONTROL_URL = routerIP;
-		 ROUTER_CONTROL_PORT = port;
 		 
 		 RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL_TEST, Constant.DEFAULT_VALUE_ROUTER_URL_TEST);
 		 index = RouterUrl.indexOf(":");
 		 if (index > 0) {
-			 routerIP = RouterUrl.substring(0, index);
+			 ROUTER_CONTROL_URL_TEST = RouterUrl.substring(0, index);
 			 routerPort = RouterUrl.substring(index+1, RouterUrl.length() );
-			 port = Integer.parseInt(routerPort);
+			 ROUTER_CONTROL_PORT_TEST = Integer.parseInt(routerPort);
 		 }
-		 
-		 ROUTER_CONTROL_URL_TEST = routerIP;
-		 ROUTER_CONTROL_PORT_TEST = port;
 		 
 		 m4test =  settings.getBoolean(Constant.PREF_KEY_TEST_MODE_ENABLED, false);
 		 
@@ -833,5 +756,3 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
 		}
     }
 }
-
-

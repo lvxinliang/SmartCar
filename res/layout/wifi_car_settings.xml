@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen 
-    xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:title="小车设置" 
-    android:key="pref_screen">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:key="pref_screen"
+    android:title="小车设置" >
+
     <PreferenceCategory android:title="服务器设置" android:key="pref_key_comm_settings">
         <EditTextPreference 
             android:dialogTitle="控制IP：端口" 
