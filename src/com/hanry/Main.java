@@ -107,8 +107,8 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
 	private int leftAndRightDirection;
 	private int frontAndBackPower;
 	private int frontAndBackDirection;
-	private byte[] lastFrontAndBackCommand = {0};
-	private byte[] lastLeftAndRightCommand = {0};
+	private int lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
+	private int lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
     
     private byte[] COMM_FORWARD = {(byte) 0xFF, (byte)0x00, (byte)0x01, (byte)0x00, (byte) 0xFF};
     private byte[] COMM_BACKWARD = {(byte) 0xFF, 0x00, 0x02, 0x00, (byte) 0xFF};
@@ -160,53 +160,55 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
 			public void onValueChanged(int power, int direction) {
         		frontAndBackDirection = direction;
         		frontAndBackPower = power;
-        		if(frontAndBackPower != 0){
+        		if(frontAndBackPower >= 3){
     				if (frontAndBackDirection == FrontAndBackJoystickView.FRONT) {
-    					if(COMM_FORWARD != lastFrontAndBackCommand){
+    					if(FrontAndBackJoystickView.FRONT != lastFrontAndBackCommand){
 							sendCommand(COMM_FORWARD);
-							lastFrontAndBackCommand = COMM_FORWARD;
+							lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
     					}
     				}else if(frontAndBackDirection == FrontAndBackJoystickView.BACK){
-    					if(COMM_BACKWARD != lastFrontAndBackCommand){
+    					if(FrontAndBackJoystickView.BACK != lastFrontAndBackCommand){
     						sendCommand(COMM_BACKWARD);
-    						lastFrontAndBackCommand = COMM_BACKWARD;
+    						lastFrontAndBackCommand = FrontAndBackJoystickView.BACK;
     					}
     				}
         		}
 			}
-			public void OnReleased(){
+			public void OnReleased(){}
+			public void OnReturnedToCenter(){
 				frontAndBackDirection = FrontAndBackJoystickView.ORIGIN;
 				frontAndBackPower = 0;
-                sendCommand(COMM_STOP);
+				sendCommand(COMM_STOP);
+				lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
 			}
-			public void OnReturnedToCenter(){}
 		});
         leftAndRightJoystick.setOnLeftAndRightJoystickMoveListener(new OnLeftAndRightJoystickMoveListener() {
 
 			public void onValueChanged(int power, int direction) {
         		leftAndRightDirection = direction;
         		leftAndRightPower = power;
-        		if(leftAndRightPower != 0){
+        		if(leftAndRightPower >= 3){
 					if (LeftAndRightJoystickView.LEFT == leftAndRightDirection) {
-    					if(COMM_LEFT != lastLeftAndRightCommand){
+    					if(LeftAndRightJoystickView.LEFT != lastLeftAndRightCommand){
     						sendCommand(COMM_LEFT);
-    						lastLeftAndRightCommand = COMM_LEFT;
+    						lastLeftAndRightCommand = LeftAndRightJoystickView.LEFT;
     					}
 					}else if(LeftAndRightJoystickView.RIGHT == leftAndRightDirection){
-						if(COMM_RIGHT != lastLeftAndRightCommand){
+						if(LeftAndRightJoystickView.RIGHT != lastLeftAndRightCommand){
 							sendCommand(COMM_RIGHT);
-							lastLeftAndRightCommand = COMM_RIGHT;
+							lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
 						}
 					}
         		}
         	}
-			public void OnReleased() {
+			public void OnReleased() {}
+
+			public void OnReturnedToCenter() {
 				frontAndBackDirection = LeftAndRightJoystickView.ORIGIN;
 				frontAndBackPower = 0;
                 sendCommand(COMM_STOP);
+                lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
 			}
-
-			public void OnReturnedToCenter() {}
         });
         
         mLogText = (TextView)findViewById(R.id.logTextView);
