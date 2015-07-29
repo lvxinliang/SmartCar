@@ -81,12 +81,13 @@
         android:textColor="@color/black"
         android:textSize="32sp"
         fontawesometext:fa_icon="fa-lightbulb-o" />
-
+<!-- 
     <com.hanry.SeekBar
         android:id="@+id/gear1"
         android:layout_width="30dp"
         android:layout_height="250dp"
         android:layout_alignRight="@+id/btnLen"
         android:layout_below="@+id/btnLen" />
+ -->
 
 </RelativeLayout>
