@@ -288,8 +288,10 @@ public class Main extends Activity {
         }
         
         if (!bReaddyToSendCmd) {
-        	mLogText.setText("please wait 1 second to send msg ....");
+        	mLogText.setText("◊‘ºÏ÷–£¨«Î…‘∫Û°£");
         	return;
+        }else{
+        	mLogText.setText("");
         }
         	
         try {
