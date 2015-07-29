@@ -29,9 +29,10 @@ import com.hanry.views.FrontAndBackJoystickView;
 import com.hanry.views.FrontAndBackJoystickView.OnFrontAndBackJoystickMoveListener;
 import com.hanry.views.LeftAndRightJoystickView;
 import com.hanry.views.LeftAndRightJoystickView.OnLeftAndRightJoystickMoveListener;
-
-public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
-{
+/** Remove SeekBar
+public class Main extends Activity implements SeekBar.OnSeekBarChangeListener{
+*/
+public class Main extends Activity {
     protected static final String TAG = "MainActivity";
 	private final int MSG_ID_ERR_CONN = 1001;
     //private final int MSG_ID_ERR_SEND = 1002;
@@ -85,7 +86,9 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
     private TextView mLogText;
     
     private SeekBar mSeekBar;
+    /** Remove SeekBar
     private int  mSeekBarValue = -1;
+    */
     
     private FontAwesomeText buttonSetting;
     private FontAwesomeText buttonLen;
@@ -216,13 +219,13 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             mLogText.setBackgroundColor(Color.argb(0, 0, 255, 0));//0~255透明度值
             mLogText.setTextColor(Color.argb(90, 0, 255, 0));
         }
-        
+/**  Remove SeekBar
         mSeekBar = (SeekBar)findViewById(R.id.gear1);
         mSeekBar.setMax(MAX_GEAR_VALUE);
         mSeekBar.setProgress(INIT_GEAR_VALUE);
         mSeekBar.setOnSeekBarChangeListener(this);
         buttonLen.setKeepScreenOn(true);
-        
+*/        
         //connect  
         connectToRouter(m4test);
         
@@ -555,7 +558,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
                   
                   break;
               case MSG_ID_START_CHECK:
-                  mLogText.setText("开始进行自检，请稍等。。。。!!");
+//                  mLogText.setText("开始进行自检，请稍等。。。。!!");
                   bReaddyToSendCmd = true;
                   //selfcheck();
                   break;
@@ -639,6 +642,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         mAnimationHandler.removeMessages(0);
     }
     
+    /** Remove SeekBar
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUserh) {
         
         if (Math.abs(progress - mSeekBarValue) > MIN_GEAR_STEP) {
@@ -648,6 +652,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             sendCommand(COMM_GEAR_CONTROL);
         }
     }
+    */
 
     public void onStartTrackingTouch(SeekBar seekBar) {
       
