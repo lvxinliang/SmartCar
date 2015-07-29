@@ -87,6 +87,7 @@ public class Main extends Activity {
     
     /** Remove SeekBar
     private SeekBar mSeekBar;
+    /** Remove SeekBar
     private int  mSeekBarValue = -1;
     */
     
@@ -652,6 +653,7 @@ public class Main extends Activity {
             sendCommand(COMM_GEAR_CONTROL);
         }
     }
+    */
 
     public void onStartTrackingTouch(SeekBar seekBar) {
       
