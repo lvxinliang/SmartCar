@@ -372,15 +372,15 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             mThreadFlag = true;
             mThreadClient = new Thread(mRunnable);
             mThreadClient.start();
-            String cameraUrl = null;
-            if (m4test) {
-            	cameraUrl = CAMERA_VIDEO_URL_TEST;
-            } else {
-            	cameraUrl = CAMERA_VIDEO_URL;
-            }
-            if (null != cameraUrl && cameraUrl.length() > 4) {
-            	backgroundView.setSource(cameraUrl);//初始化Camera
-            }
+//            String cameraUrl = null;
+//            if (m4test) {
+//            	cameraUrl = CAMERA_VIDEO_URL_TEST;
+//            } else {
+//            	cameraUrl = CAMERA_VIDEO_URL;
+//            }
+//            if (null != cameraUrl && cameraUrl.length() > 4) {
+//            	backgroundView.setSource(cameraUrl);//初始化Camera
+//            }
         } else if (WIFI_STATE_NOT_CONNECTED == status) {
             mLogText.setText("初始化连接路由器失败，wifi未连接，或者路由器状态异常！");
         } else {
@@ -598,7 +598,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
               }
               super.handleMessage(msg);            
 
-          }                                    
+          }
      };
      
      private boolean isIconAnimationEnabled () {
@@ -677,6 +677,11 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
         super.onDestroy();
     }
     
+	public void onPause() {
+		backgroundView.stopPlayback();
+		super.onPause();
+	}
+	
     @Override
     protected void onResume() {
     	int status = getWifiStatus();
@@ -691,6 +696,7 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener
             	backgroundView.setSource(cameraUrl);//初始化Camera
             }
         }
+        backgroundView.resumePlayback();
         super.onResume();
     }
     

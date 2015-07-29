@@ -1,13 +1,9 @@
 package com.hanry;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.hanry.Constant;
 
 import android.content.Context;
 import android.content.Intent;
@@ -152,7 +148,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                 	mtakePic = false;
                                 }
                                 destRect = destRect(mScreenWidth, mScreenHeight);
-                                c.drawColor(Color.BLACK);
+                                c.drawColor(Color.WHITE);
                                 c.drawBitmap(bm, null, destRect, p);
                                 if (showFps) {
                                     p.setXfermode(mode);
@@ -201,7 +197,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
             overlayPaint.setTextSize(12);
             overlayPaint.setTypeface(Typeface.DEFAULT);
             overlayTextColor = Color.WHITE;
-            overlayBackgroundColor = Color.BLACK;
+            overlayBackgroundColor = Color.WHITE;
             ovlPos = MjpegView.POSITION_LOWER_RIGHT;
             displayMode = MjpegView.SIZE_STANDARD;
             dispWidth = getWidth();
@@ -276,13 +272,13 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public void setSource(MjpegInputStream source) {
         mIn = source;
         mInUrl = null; 
-        startPlayback();
+//        startPlayback();
     }
 
     public void setSource(String url) {
     	mInUrl = url;
     	mIn = null;
-        startPlayback();
+//        startPlayback();
     }
     
     public void setOverlayPaint(Paint p) {

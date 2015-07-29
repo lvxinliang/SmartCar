@@ -11,8 +11,7 @@
         android:id="@+id/mySurfaceView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        android:background="@color/white" />
+        android:layout_alignParentRight="true" />
 
     <com.hanry.views.FrontAndBackJoystickView
         android:id="@+id/frontAndBackJoystickView"
