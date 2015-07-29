@@ -76,7 +76,7 @@ public class Main extends Activity {
     private String ROUTER_CONTROL_URL_TEST = "192.168.1.1";
     private int ROUTER_CONTROL_PORT = 2001;
     private int ROUTER_CONTROL_PORT_TEST = 2001;
-    private final String WIFI_SSID_PERFIX = "robot";
+    private final String WIFI_SSID_PERFIX = "";  //SmartCar
     
     private FontAwesomeText TakePicture;
     
@@ -335,6 +335,10 @@ public class Main extends Activity {
         }
     }
     
+    private boolean isEffectiveWiFi(String wifiName){
+        return wifiName.toLowerCase().contains(WIFI_SSID_PERFIX);
+    }
+    
     private int getWifiStatus () {
         int status = WIFI_STATE_UNKNOW;
         WifiManager mWifiMng = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
@@ -356,9 +360,8 @@ public class Main extends Activity {
                     String SSID = info.getSSID();
                     Log.i("Socket", "getWifiStatus bssid=" + bSSID + " ssid=" + SSID);
                     if (null != SSID && SSID.length() > 0) {
-                        if (SSID.toLowerCase().contains(WIFI_SSID_PERFIX)) {
+                    	if(isEffectiveWiFi(SSID))
                             status = WIFI_STATE_CONNECTED;
-                        }
                     }
                 }
             }
@@ -558,7 +561,7 @@ public class Main extends Activity {
                   
                   break;
               case MSG_ID_START_CHECK:
-//                  mLogText.setText("开始进行自检，请稍等。。。。!!");
+//                  mLogText.setText("开始进行自检，请稍等。");
                   bReaddyToSendCmd = true;
                   //selfcheck();
                   break;
