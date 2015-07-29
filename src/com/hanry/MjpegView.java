@@ -33,7 +33,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     public final static int SIZE_STANDARD = 1;
     public final static int SIZE_BEST_FIT = 4;
     public final static int SIZE_FULLSCREEN = 8;
-    private final static String SAVE_TO_DIR = "mjpegview";
+    private final static String SAVE_TO_DIR = "SmartCarImg";
     
     private MjpegViewThread thread;
     private MjpegInputStream mIn = null;
