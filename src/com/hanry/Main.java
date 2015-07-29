@@ -269,7 +269,7 @@ public class Main extends Activity {
                 if (null != mThreadClient)
                     mThreadClient.join(); // wait for secondary to finish
             } catch (InterruptedException e) {
-                mLogText.setText("关闭路由器监听进程失败。。。" +  e.getMessage());
+                mLogText.setText("关闭小车监听进程失败。。。" +  e.getMessage());
             }
             
             connectToRouter(m4test);
@@ -297,7 +297,7 @@ public class Main extends Activity {
             //Toast.makeText(mContext, "发送成功", 1);
         } catch (Exception e) {
             Log.i("Socket", e.getMessage() != null ? e.getMessage().toString() : "sendCommand error!");
-            //Toast.makeText(mContext, "发送消息给路由器失败  ：" + e.getMessage(),
+            //Toast.makeText(mContext, "发送消息给小车失败  ：" + e.getMessage(),
             //        Toast.LENGTH_SHORT).show();
         }
 
@@ -385,9 +385,9 @@ public class Main extends Activity {
 //            	backgroundView.setSource(cameraUrl);//初始化Camera
 //            }
         } else if (WIFI_STATE_NOT_CONNECTED == status) {
-            mLogText.setText("初始化连接路由器失败，wifi未连接，或者路由器状态异常！");
+            mLogText.setText("初始化连接小车失败，wifi未连接，或者小车状态异常！");
         } else {
-            mLogText.setText("初始化连接路由器失败，wifi未开启，请手动开启后重试！");
+            mLogText.setText("初始化连接小车失败，wifi未开启，请手动开启后重试！");
         }
     }
     private void initWifiConnection() {
@@ -542,7 +542,7 @@ public class Main extends Activity {
                   mLogText.setText("打开监听失败！！");
                   break;
               case MSG_ID_CON_SUCCESS:
-                  mLogText.setText("成功连接到路由器!");
+                  mLogText.setText("成功连接到小车!");
     
                   Message msgStartCheck = new Message();
                   msgStartCheck.what = MSG_ID_START_CHECK;
@@ -563,7 +563,7 @@ public class Main extends Activity {
                   //selfcheck();
                   break;
               case MSG_ID_ERR_CONN:
-                  mLogText.setText("连接路由器失败!");
+                  mLogText.setText("连接小车失败!");
                   break;
               case MSG_ID_CLEAR_QUIT_FLAG:
                   mQuitFlag = false;
@@ -590,7 +590,7 @@ public class Main extends Activity {
                   break;
               case MSG_ID_HEART_BREAK_SEND:
             	  Message msgSB = new Message();
-                  msgSB.what = MSG_ID_HEART_BREAK_SEND;//循环向路由器发送心跳包
+                  msgSB.what = MSG_ID_HEART_BREAK_SEND;//循环向小车发送心跳包
                   Log.i("main", "handle MSG_ID_HEART_BREAK_SEND");
                   
                   sendCommand(COMM_HEART_BREAK);
