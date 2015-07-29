@@ -8,6 +8,7 @@ import java.util.Date;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -136,7 +137,15 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                             		mIn = MjpegInputStream.read(mInUrl);
                             	}
                             	
-                                bm = mIn.readMjpegFrame();
+                            	if(null == mIn) { //URL无效，不能获取视频流
+                            		//显示无效图片
+                            		bm = BitmapFactory.decodeResource(getResources(), R.drawable.video_bg);
+                            		mtakePic = false;
+                            		showFps = false;
+                            	}else{
+                            		showFps = true;
+                            		bm = mIn.readMjpegFrame();
+                                }
                                 
                                 if (mtakePic) {
                                 	Log.i("MjpegView", "thread run start to take picture");
@@ -172,11 +181,16 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                     }
                                 }
                             } catch (Exception e) {
+                            	Log.e(this.getClass().toString(), "MjpegInputStream Error.");
+                            	e.printStackTrace();
                             }
                         }
                     } finally {
                         if (c != null)
                             mSurfaceHolder.unlockCanvasAndPost(c);
+                        if(null == mIn) {
+                        	break;
+                        }
                     }
                 }
             }
