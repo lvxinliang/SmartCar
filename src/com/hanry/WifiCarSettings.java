@@ -24,9 +24,6 @@ import com.hanry.Constant.CommandArray;
 public class WifiCarSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {  
 	
 	private EditTextPreference mPrefRouterUrl;
-	private EditTextPreference mPrefCameraUrl;
-	private EditTextPreference mPrefRouterUrlTest;
-	private EditTextPreference mPrefCameraUrlTest;
 	
 	private EditTextPreference mPrefLenOn;
 	private EditTextPreference mPrefLenOff;
@@ -39,9 +36,6 @@ public class WifiCarSettings extends PreferenceActivity implements OnSharedPrefe
 		
 		
 		mPrefRouterUrl = (EditTextPreference)findPreference(Constant.PREF_KEY_ROUTER_URL);
-		mPrefCameraUrl = (EditTextPreference)findPreference(Constant.PREF_KEY_CAMERA_URL);
-		mPrefRouterUrlTest = (EditTextPreference)findPreference(Constant.PREF_KEY_ROUTER_URL_TEST);
-		mPrefCameraUrlTest = (EditTextPreference)findPreference(Constant.PREF_KEY_CAMERA_URL_TEST);
 		
 		mPrefLenOn = (EditTextPreference)findPreference(Constant.PREF_KEY_LEN_ON);
 		mPrefLenOff = (EditTextPreference)findPreference(Constant.PREF_KEY_LEN_OFF);
@@ -52,18 +46,9 @@ public class WifiCarSettings extends PreferenceActivity implements OnSharedPrefe
 	 void initValue(){
 		 
 		 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-		 String CameraUrl = settings.getString(Constant.PREF_KEY_CAMERA_URL, Constant.DEFAULT_VALUE_CAMERA_URL);
-		 mPrefCameraUrl.setSummary(CameraUrl);
 		 
 		 String RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL, Constant.DEFAULT_VALUE_ROUTER_URL);
 		 mPrefRouterUrl.setSummary(RouterUrl);
-		 
-		 
-		 String testCameraUrl = settings.getString(Constant.PREF_KEY_CAMERA_URL_TEST, Constant.DEFAULT_VALUE_CAMERA_URL_TEST);
-		 mPrefCameraUrlTest.setSummary(testCameraUrl);
-		 
-		 String testRouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL_TEST, Constant.DEFAULT_VALUE_ROUTER_URL_TEST);
-		 mPrefRouterUrlTest.setSummary(testRouterUrl);
 		 
 		 String lenon = settings.getString(Constant.PREF_KEY_LEN_ON, Constant.DEFAULT_VALUE_LEN_ON);
 		 mPrefLenOn.setSummary(lenon);

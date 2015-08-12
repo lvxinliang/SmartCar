@@ -234,7 +234,9 @@ public class LeftAndRightJoystickView extends View {
 				this.yPosition = (int) y;
 			}
 
-			reportOnMoved();
+			if(Math.abs(this.xPosition - this.centerX) > 5){
+				reportOnMoved();
+			}
 			invalidate();
 			return true;
 		}

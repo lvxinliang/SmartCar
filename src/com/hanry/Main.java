@@ -34,6 +34,8 @@ public class Main extends Activity implements SeekBar.OnSeekBarChangeListener{
 */
 public class Main extends Activity {
     protected static final String TAG = "MainActivity";
+	private static final String CAMERA_VIDEO_URL_SUFFIX = ":8080/?action=stream";
+	private static final String CAMERA_VIDEO_URL_PREFIX = "http://";
 	private final int MSG_ID_ERR_CONN = 1001;
     //private final int MSG_ID_ERR_SEND = 1002;
     private final int MSG_ID_ERR_RECEIVE = 1003;
@@ -68,14 +70,9 @@ public class Main extends Activity {
     private final int QUIT_BUTTON_PRESS_INTERVAL = 2500;//ms
     private final int HEART_BREAK_SEND_INTERVAL = 2500;//ms
     
-    private boolean m4test = false;
-
     private String CAMERA_VIDEO_URL = "http://192.168.2.1:8080/?action=stream";
-    private String CAMERA_VIDEO_URL_TEST = "";
     private String ROUTER_CONTROL_URL = "192.168.2.1";
-    private String ROUTER_CONTROL_URL_TEST = "192.168.1.1";
     private int ROUTER_CONTROL_PORT = 2001;
-    private int ROUTER_CONTROL_PORT_TEST = 2001;
     private final String WIFI_SSID_PERFIX = "";  //SmartCar
     
     private FontAwesomeText TakePicture;
@@ -227,7 +224,7 @@ public class Main extends Activity {
         buttonLen.setKeepScreenOn(true);
 */        
         //connect  
-        connectToRouter(m4test);
+        connectToRouter();
         
     }
 
@@ -272,7 +269,7 @@ public class Main extends Activity {
                 mLogText.setText("关闭小车监听进程失败。。。" +  e.getMessage());
             }
             
-            connectToRouter(m4test);
+            connectToRouter();
             return false;
         }
     };
@@ -374,21 +371,12 @@ public class Main extends Activity {
         return status;
     }
     
-    private void connectToRouter(boolean isTest) {
+    private void connectToRouter() {
         int status = getWifiStatus();
-        if (WIFI_STATE_CONNECTED == status || isTest) {
+        if (WIFI_STATE_CONNECTED == status) {
             mThreadFlag = true;
             mThreadClient = new Thread(mRunnable);
             mThreadClient.start();
-//            String cameraUrl = null;
-//            if (m4test) {
-//            	cameraUrl = CAMERA_VIDEO_URL_TEST;
-//            } else {
-//            	cameraUrl = CAMERA_VIDEO_URL;
-//            }
-//            if (null != cameraUrl && cameraUrl.length() > 4) {
-//            	backgroundView.setSource(cameraUrl);//初始化Camera
-//            }
         } else if (WIFI_STATE_NOT_CONNECTED == status) {
             mLogText.setText("初始化连接小车失败，wifi未连接，或者小车状态异常！");
         } else {
@@ -404,10 +392,6 @@ public class Main extends Activity {
             }
             String clientUrl = ROUTER_CONTROL_URL;
             int clientPort = ROUTER_CONTROL_PORT;
-            if (m4test) {
-            	clientUrl = ROUTER_CONTROL_URL_TEST;
-                clientPort = ROUTER_CONTROL_PORT_TEST;
-            }
             mtcpSocket = new SocketClient(clientUrl, clientPort);
             Log.i("Socket", "Wifi Connect created ip=" + clientUrl
             		+ " port=" + clientPort);
@@ -695,13 +679,9 @@ public class Main extends Activity {
     @Override
     protected void onResume() {
     	int status = getWifiStatus();
-        if (WIFI_STATE_CONNECTED == status || m4test) {
+        if (WIFI_STATE_CONNECTED == status) {
             String cameraUrl = null;
-            if (m4test) {
-            	cameraUrl = CAMERA_VIDEO_URL_TEST;
-            } else {
-            	cameraUrl = CAMERA_VIDEO_URL;
-            }
+            cameraUrl = CAMERA_VIDEO_URL;
             if (null != cameraUrl && cameraUrl.length() > 4) {
             	backgroundView.setSource(cameraUrl);//初始化Camera
             }
@@ -726,8 +706,6 @@ public class Main extends Activity {
     void initSettings () {
 		 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 		 
-		 CAMERA_VIDEO_URL = settings.getString(Constant.PREF_KEY_CAMERA_URL, Constant.DEFAULT_VALUE_CAMERA_URL);
-		 CAMERA_VIDEO_URL_TEST = settings.getString(Constant.PREF_KEY_CAMERA_URL_TEST, Constant.DEFAULT_VALUE_CAMERA_URL_TEST);
 		 
 		 String RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL, Constant.DEFAULT_VALUE_ROUTER_URL);
 		 int index = RouterUrl.indexOf(":");
@@ -738,15 +716,9 @@ public class Main extends Activity {
 			 ROUTER_CONTROL_PORT = Integer.parseInt(routerPort);
 		 }
 		 
-		 RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL_TEST, Constant.DEFAULT_VALUE_ROUTER_URL_TEST);
-		 index = RouterUrl.indexOf(":");
-		 if (index > 0) {
-			 ROUTER_CONTROL_URL_TEST = RouterUrl.substring(0, index);
-			 routerPort = RouterUrl.substring(index+1, RouterUrl.length() );
-			 ROUTER_CONTROL_PORT_TEST = Integer.parseInt(routerPort);
+		 if(ROUTER_CONTROL_URL != null && !"".equals(ROUTER_CONTROL_URL)){
+			 CAMERA_VIDEO_URL = CAMERA_VIDEO_URL_PREFIX + ROUTER_CONTROL_URL + CAMERA_VIDEO_URL_SUFFIX;
 		 }
-		 
-		 m4test =  settings.getBoolean(Constant.PREF_KEY_TEST_MODE_ENABLED, false);
 		 
 		 initLenControl(Constant.PREF_KEY_LEN_ON, Constant.DEFAULT_VALUE_LEN_ON);
 		 initLenControl(Constant.PREF_KEY_LEN_OFF, Constant.DEFAULT_VALUE_LEN_OFF);

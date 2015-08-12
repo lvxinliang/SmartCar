@@ -234,7 +234,9 @@ public class FrontAndBackJoystickView extends View {
 				this.yPosition = (int) y;
 			}
 
-			reportOnMoved();
+			if(Math.abs(this.yPosition - this.centerY) > 5){
+				reportOnMoved();
+			}
 			invalidate();
 			return true;
 		}
