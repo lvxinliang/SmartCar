@@ -40,6 +40,17 @@
         fontawesometext:fa_icon="fa-cog" />
 
     <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/ButtonGravity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/ButtonTakePic"
+        android:layout_margin="10dp"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-dot-circle-o" />
+
+    <com.beardedhen.androidbootstrap.FontAwesomeText
         android:id="@+id/ButtonTakePic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

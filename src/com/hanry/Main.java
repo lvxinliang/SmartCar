@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.net.wifi.WifiInfo;
@@ -36,10 +40,12 @@ import com.hanry.views.LeftAndRightJoystickView.OnLeftAndRightJoystickMoveListen
 /** Remove SeekBar
 public class Main extends Activity implements SeekBar.OnSeekBarChangeListener{
 */
-public class Main extends Activity {
+public class Main extends Activity implements SensorEventListener{
+	protected SensorManager sensorManager;
     protected static final String TAG = "MainActivity";
 	private static final String CAMERA_VIDEO_URL_SUFFIX = ":8080/?action=stream";
 	private static final String CAMERA_VIDEO_URL_PREFIX = "http://";
+	private static final int TRIGGER_VALUE = 12;
 	private final int MSG_ID_ERR_CONN = 1001;
     //private final int MSG_ID_ERR_SEND = 1002;
     private final int MSG_ID_ERR_RECEIVE = 1003;
@@ -75,6 +81,7 @@ public class Main extends Activity {
     private int ROUTER_CONTROL_PORT = 2001;
     private final String WIFI_SSID_PERFIX = "";  //SmartCar
     
+    private FontAwesomeText enableGravityButton;
     private FontAwesomeText TakePicture;
     
     private FontAwesomeText mAnimIndicator;
@@ -90,6 +97,7 @@ public class Main extends Activity {
     private FontAwesomeText buttonSetting;
     private FontAwesomeText buttonLen;
     private boolean bLenon = false;
+    private boolean enableGravity = false;
     private int mWifiStatus = STATUS_INIT;
 
     private Thread mThreadClient = null;
@@ -108,8 +116,9 @@ public class Main extends Activity {
 	private Command lastCommand = null;
     
     private FrontAndBackJoystickView frontAndBackJoystick; 
-    private LeftAndRightJoystickView leftAndRightJoystick; 
-    @Override
+    private LeftAndRightJoystickView leftAndRightJoystick;
+    
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
@@ -128,13 +137,15 @@ public class Main extends Activity {
         buttonLen.setOnClickListener(buttonLenClickListener);
         buttonLen.setLongClickable(true);
         
+        enableGravityButton = (FontAwesomeText)findViewById(R.id.ButtonGravity);
         TakePicture = (FontAwesomeText)findViewById(R.id.ButtonTakePic);
         TakePicture.setOnClickListener(buttonTakePicClickListener);
-        
+        enableGravityButton.setOnClickListener(new ButtonGravityClickListener(this));
         backgroundView = (MjpegView)findViewById(R.id.mySurfaceView1); 
         
         frontAndBackJoystick = (FrontAndBackJoystickView)findViewById(R.id.frontAndBackJoystickView);
         leftAndRightJoystick = (LeftAndRightJoystickView)findViewById(R.id.leftAndRightJoystickView);
+        
         
         frontAndBackJoystick.setOnFrontAndBackJoystickMoveListener(new OnFrontAndBackJoystickMoveListener() {
 			public void onValueChanged(int power, int direction) {
@@ -245,13 +256,30 @@ public class Main extends Activity {
         mLogText = (TextView)findViewById(R.id.logTextView);
         if (null != mLogText) {
             mLogText.setBackgroundColor(Color.argb(0, 0, 255, 0));//0~255透明度值
-            mLogText.setTextColor(Color.argb(90, 0, 255, 0));
+            mLogText.setTextColor(Color.argb(90, 0, 0, 0));
         }
+        this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         //connect  
         connectToRouter();
     }
 
-    private OnClickListener buttonLenClickListener = new OnClickListener() {
+    public FontAwesomeText getEnableGravityButton() {
+		return enableGravityButton;
+	}
+
+	public void setEnableGravityButton(FontAwesomeText enableGravityButton) {
+		this.enableGravityButton = enableGravityButton;
+	}
+
+	public boolean getEnableGravity() {
+		return enableGravity;
+	}
+
+	public void setEnableGravity(boolean enableGravity) {
+		this.enableGravity = enableGravity;
+	}
+
+	private OnClickListener buttonLenClickListener = new OnClickListener() {
         public void onClick(View arg0) {            
               if (bLenon) {
                   bLenon = false;
@@ -266,8 +294,18 @@ public class Main extends Activity {
         }
     };
     
+    protected void toHideComponent() {
+    	this.frontAndBackJoystick.setVisibility(View.GONE);
+    	this.leftAndRightJoystick.setVisibility(View.GONE);
+    }
+    
+    protected void toShowComponent() {
+    	this.frontAndBackJoystick.setVisibility(View.VISIBLE);
+    	this.leftAndRightJoystick.setVisibility(View.VISIBLE);
+    }
+    
     private OnClickListener buttonTakePicClickListener = new OnClickListener() {
-    	public void onClick(View arg0) {       
+    	public void onClick(View arg0) {
             if (null != backgroundView) {
             	backgroundView.saveBitmap();
             }
@@ -302,7 +340,7 @@ public class Main extends Activity {
         sendCommand(new Command(new CategoryBit(CategoryBit.CHECK), new CommandBit(CommandBit.SELF_CHECK), new ValueBit(0, 0)).getBytes());
     }
     
-    private void sendCommand(byte[] data) {
+    protected void sendCommand(byte[] data) {
     	Log.i("sendCommand", Utils.castBytesToHexString(data));
         if ( mWifiStatus != STATUS_CONNECTED || null == mtcpSocket) {
             return;
@@ -633,7 +671,7 @@ public class Main extends Activity {
                 }
             }
             mIconAnimationState = !mIconAnimationState;
-            mAnimIndicator.setTextColor(Color.GREEN);
+            mAnimIndicator.setTextColor(Color.BLACK);
         }
     };
     
@@ -678,9 +716,16 @@ public class Main extends Activity {
 		backgroundView.stopPlayback();
 		super.onPause();
 	}
+	public void onStop() {
+		if(enableGravity){
+			sensorManager.unregisterListener(this);
+		}
+		super.onStop();
+	}
 	
     @Override
     protected void onResume() {
+    	super.onResume();
     	int status = getWifiStatus();
         if (WIFI_STATE_CONNECTED == status) {
             String cameraUrl = null;
@@ -690,7 +735,9 @@ public class Main extends Activity {
             }
         }
         backgroundView.resumePlayback();
-        super.onResume();
+        if(enableGravity){
+        	this.sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+        }
     }
     
     @Override
@@ -724,4 +771,86 @@ public class Main extends Activity {
 		 }
 		 
     }
+
+    /**
+     * 传感器精度发生改变时的回调方法
+     */
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+	}
+
+	/**
+	 * 当传感器值发生改变时的回调方法
+	 */
+	public void onSensorChanged(SensorEvent event) {
+		
+		float[] values = event.values;
+		float xValue = values[1];
+		float yValue = values[2];
+		StringBuilder sb = new StringBuilder();
+		sb.append("Z轴转过的角度:");
+		sb.append(values[0]);
+		sb.append("\nX轴转过的角度:");
+		sb.append(values[1]);
+		sb.append("\nY轴转过的角度:");
+		sb.append(values[2]);
+		this.mLogText.setText(sb.toString());
+		
+		if(yValue < -TRIGGER_VALUE){
+			if(xValue > TRIGGER_VALUE){
+				//left_forward
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit()).getBytes());
+				
+			}else if(xValue < -TRIGGER_VALUE){
+				//right_forward
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_FORWARD), new ValueBit()).getBytes());
+			}else{
+				//forward
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.FORWARD), new ValueBit()).getBytes());
+				
+			}
+		}else if(yValue > TRIGGER_VALUE){
+			if(xValue > TRIGGER_VALUE){
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_BACK), new ValueBit()).getBytes());
+				//left_back
+				
+			}else if(xValue < -TRIGGER_VALUE){
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_BACK), new ValueBit()).getBytes());
+				//right_back
+			}else{
+				//back
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.BACK), new ValueBit()).getBytes());
+				
+			}
+		}
+		if(xValue < -TRIGGER_VALUE){
+			if(yValue < -TRIGGER_VALUE){
+				//right_forward
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_FORWARD), new ValueBit()).getBytes());
+				
+			}else if(yValue > TRIGGER_VALUE){
+				//right_back
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_BACK), new ValueBit()).getBytes());
+			}else{
+				//right
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT), new ValueBit()).getBytes());
+			}
+		}else if(xValue > TRIGGER_VALUE){
+			if(yValue < -TRIGGER_VALUE){
+				//left_forward
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit()).getBytes());
+				
+			}else if(yValue > TRIGGER_VALUE){
+				//left_back
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_BACK), new ValueBit()).getBytes());
+			}else{
+				//left
+				sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT), new ValueBit()).getBytes());
+			}
+		}
+		
+		if(xValue > -TRIGGER_VALUE && xValue < TRIGGER_VALUE && yValue > -TRIGGER_VALUE && yValue < TRIGGER_VALUE){
+			//stop
+			sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit()).getBytes());
+		}
+	}
 }
