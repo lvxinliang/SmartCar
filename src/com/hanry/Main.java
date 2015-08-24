@@ -786,14 +786,14 @@ public class Main extends Activity implements SensorEventListener{
 		float[] values = event.values;
 		float xValue = values[1];
 		float yValue = values[2];
-		StringBuilder sb = new StringBuilder();
-		sb.append("Z轴转过的角度:");
-		sb.append(values[0]);
-		sb.append("\nX轴转过的角度:");
-		sb.append(values[1]);
-		sb.append("\nY轴转过的角度:");
-		sb.append(values[2]);
-		this.mLogText.setText(sb.toString());
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("Z轴转过的角度:");
+//		sb.append(values[0]);
+//		sb.append("\nX轴转过的角度:");
+//		sb.append(values[1]);
+//		sb.append("\nY轴转过的角度:");
+//		sb.append(values[2]);
+//		this.mLogText.setText(sb.toString());
 		
 		if(yValue < -TRIGGER_VALUE){
 			if(xValue > TRIGGER_VALUE){
