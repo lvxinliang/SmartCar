@@ -101,14 +101,15 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         private Bitmap makeFpsOverlay(Paint p, String text) {
             Rect b = new Rect();
             p.getTextBounds(text, 0, text.length(), b);
-            int bwidth = b.width() - 2;
-            int bheight = b.height() - 2;
+            int bwidth = b.width();
+            int bheight = b.height();
             Bitmap bm = Bitmap.createBitmap(bwidth, bheight,
                     Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(bm);
             p.setColor(overlayBackgroundColor);
             c.drawRect(0, 0, bwidth, bheight, p);
             p.setColor(overlayTextColor);
+            p.setTextSize(40);
             c.drawText(text, -b.left + 1,
                     (bheight / 2) - ((p.ascent() + p.descent()) / 2) + 1, p);
             return bm;
@@ -162,10 +163,10 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                     if (ovl != null) {
                                         height = ((ovlPos & 1) == 1) ? destRect.top
                                                 : destRect.bottom
-                                                        - ovl.getHeight();
+                                                        - ovl.getHeight()-10;
                                         width = ((ovlPos & 8) == 8) ? destRect.left
                                                 : destRect.right
-                                                        - ovl.getWidth();
+                                                        - ovl.getWidth()-10;
                                         c.drawBitmap(ovl, width, height, null);
                                     }
                                     p.setXfermode(null);
@@ -208,8 +209,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
             overlayPaint.setTextAlign(Paint.Align.LEFT);
             overlayPaint.setTextSize(12);
             overlayPaint.setTypeface(Typeface.DEFAULT);
-            overlayTextColor = Color.WHITE;
-            overlayBackgroundColor = Color.WHITE;
+            overlayBackgroundColor = Color.argb(00, 00, 00, 00);
             ovlPos = MjpegView.POSITION_LOWER_RIGHT;
             displayMode = MjpegView.SIZE_STANDARD;
             dispWidth = getWidth();
@@ -217,7 +217,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
 
             Log.i("MjpegView", "init successfully!");
         }
-        setOverlayTextColor(Color.GREEN);
+        setOverlayTextColor(Color.argb(127, 0x00, 0x00, 0x00));
         DisplayMetrics dm = getResources().getDisplayMetrics(); 
         mScreenWidth = dm.widthPixels; 
         mScreenHeight = dm.heightPixels;
