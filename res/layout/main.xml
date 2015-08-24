@@ -51,17 +51,6 @@
         android:textSize="32sp"
         fontawesometext:fa_icon="fa-camera" />
 
-    <com.beardedhen.androidbootstrap.FontAwesomeText
-        android:id="@+id/btnIndicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ButtonTakePic"
-        android:layout_toLeftOf="@+id/ButtonTakePic"
-        android:alpha="0.5"
-        android:textColor="@color/black"
-        android:textSize="32sp"
-        fontawesometext:fa_icon="fa-video-camera" />
-
     <TextView
         android:id="@+id/logTextView"
         android:layout_width="wrap_content"

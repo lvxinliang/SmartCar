@@ -24,7 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.FontAwesomeText;
-import com.hanry.Constant.CommandArray;
+import com.hanry.command.CategoryBit;
+import com.hanry.command.Command;
+import com.hanry.command.CommandBit;
+import com.hanry.command.Utils;
+import com.hanry.command.ValueBit;
 import com.hanry.views.FrontAndBackJoystickView;
 import com.hanry.views.FrontAndBackJoystickView.OnFrontAndBackJoystickMoveListener;
 import com.hanry.views.LeftAndRightJoystickView;
@@ -60,10 +64,6 @@ public class Main extends Activity {
     private final int WIFI_STATE_DISABLED = 0x3001;
     private final int WIFI_STATE_NOT_CONNECTED = 0x3002;
     private final int WIFI_STATE_CONNECTED = 0x3003;
-    
-    private final int MIN_GEAR_STEP = 5;
-    private final int MAX_GEAR_VALUE = 180;
-    private final int INIT_GEAR_VALUE = 50;
     
     private final byte COMMAND_PERFIX = -1;
     private final int HEART_BREAK_CHECK_INTERVAL = 8000;//ms
@@ -103,28 +103,9 @@ public class Main extends Activity {
     private Context mContext;
     SocketClient mtcpSocket;
     MjpegView backgroundView = null;
-	private int leftAndRightPower;
-	private int leftAndRightDirection;
-	private int frontAndBackPower;
-	private int frontAndBackDirection;
 	private int lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
 	private int lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
-    
-    private byte[] COMM_FORWARD = {(byte) 0xFF, (byte)0x00, (byte)0x01, (byte)0x00, (byte) 0xFF};
-    private byte[] COMM_BACKWARD = {(byte) 0xFF, 0x00, 0x02, 0x00, (byte) 0xFF};
-    private byte[] COMM_STOP = {(byte) 0xFF, 0x00, 0x00, 0x00, (byte) 0xFF};
-    private byte[] COMM_LEFT = {(byte) 0xFF, 0x00, 0x03, 0x00, (byte) 0xFF};
-    private byte[] COMM_RIGHT = {(byte) 0xFF, 0x00, 0x04, 0x00, (byte) 0xFF};
-    
-    private byte[] COMM_LEN_ON = {(byte) 0xFF, 0x04, 0x03, 0x00, (byte) 0xFF};
-    private byte[] COMM_LEN_OFF = {(byte) 0xFF, 0x04, 0x02, 0x00, (byte) 0xFF};
-
-    private byte[] COMM_GEAR_CONTROL = {(byte) 0xFF, 0x01, 0x01, 0x00, (byte) 0xFF};
-    
-    private byte[] COMM_SELF_CHECK = {(byte) 0xFF, (byte)0xEE, (byte)0xEE, 0x00, (byte) 0xFF};
-    private byte[] COMM_SELF_CHECK_ALL = {(byte) 0xFF, (byte)0xEE, (byte)0xE0, 0x00, (byte) 0xFF};
-
-    private byte[] COMM_HEART_BREAK = {(byte) 0xFF, (byte)0xEE, (byte)0xE1, 0x00, (byte) 0xFF};
+	private Command lastCommand = null;
     
     private FrontAndBackJoystickView frontAndBackJoystick; 
     private LeftAndRightJoystickView leftAndRightJoystick; 
@@ -134,7 +115,7 @@ public class Main extends Activity {
         mContext = this;
         
         initSettings();
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);//隐去标题（应用的名字必须要写在setContentView之前，否则会有异常）
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);//隐去标题（应用的名字必须要写在setContentView之前,否则会有异常）
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
         WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
@@ -149,7 +130,6 @@ public class Main extends Activity {
         
         TakePicture = (FontAwesomeText)findViewById(R.id.ButtonTakePic);
         TakePicture.setOnClickListener(buttonTakePicClickListener);
-        mAnimIndicator = (FontAwesomeText)findViewById(R.id.btnIndicator);
         
         backgroundView = (MjpegView)findViewById(R.id.mySurfaceView1); 
         
@@ -158,56 +138,107 @@ public class Main extends Activity {
         
         frontAndBackJoystick.setOnFrontAndBackJoystickMoveListener(new OnFrontAndBackJoystickMoveListener() {
 			public void onValueChanged(int power, int direction) {
-        		frontAndBackDirection = direction;
-        		frontAndBackPower = power;
-        		if(frontAndBackPower >= 3){
-    				if (frontAndBackDirection == FrontAndBackJoystickView.FRONT) {
-    					if(FrontAndBackJoystickView.FRONT != lastFrontAndBackCommand){
-							sendCommand(COMM_FORWARD);
-							lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
+        		Command command = null;
+        		if(power >= 3){
+    				if (direction == FrontAndBackJoystickView.FRONT) {
+    					if(lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit());
+    					}else if(lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_FORWARD), new ValueBit());
+    					}else{
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.FORWARD), new ValueBit());
     					}
-    				}else if(frontAndBackDirection == FrontAndBackJoystickView.BACK){
-    					if(FrontAndBackJoystickView.BACK != lastFrontAndBackCommand){
-    						sendCommand(COMM_BACKWARD);
+    					if(!command.equals(lastCommand)){
+    						sendCommand(command.getBytes());
+    						lastCommand = command;
+    						lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
+    					}
+    				}else if(direction == FrontAndBackJoystickView.BACK){
+    					if(lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_BACK), new ValueBit());
+    					}else if(lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_BACK), new ValueBit());
+    					}else{
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.BACK), new ValueBit());
+    					}
+    					if(!command.equals(lastCommand)){
+    						sendCommand(command.getBytes());
+    						lastCommand = command;
     						lastFrontAndBackCommand = FrontAndBackJoystickView.BACK;
     					}
     				}
+
         		}
 			}
 			public void OnReleased(){}
 			public void OnReturnedToCenter(){
-				frontAndBackDirection = FrontAndBackJoystickView.ORIGIN;
-				frontAndBackPower = 0;
-				sendCommand(COMM_STOP);
-				lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
+        		Command command = null;
+				if(lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT){
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT), new ValueBit());
+				}else if(lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT){
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT), new ValueBit());
+				}else{
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit());
+				}
+
+				if(!command.equals(lastCommand)){
+					sendCommand(command.getBytes());
+					lastCommand = command;
+					lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
+				}
 			}
 		});
         leftAndRightJoystick.setOnLeftAndRightJoystickMoveListener(new OnLeftAndRightJoystickMoveListener() {
 
 			public void onValueChanged(int power, int direction) {
-        		leftAndRightDirection = direction;
-        		leftAndRightPower = power;
-        		if(leftAndRightPower >= 3){
-					if (LeftAndRightJoystickView.LEFT == leftAndRightDirection) {
-    					if(LeftAndRightJoystickView.LEFT != lastLeftAndRightCommand){
-    						sendCommand(COMM_LEFT);
+        		Command command = null;
+        		if(power >= 3){
+					if (LeftAndRightJoystickView.LEFT == direction) {
+    					if(lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit());
+    					}else if(lastFrontAndBackCommand == FrontAndBackJoystickView.BACK){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT_BACK), new ValueBit());
+    					}else{
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.LEFT), new ValueBit());
+    					}
+    					if(!command.equals(lastCommand)){
+    						sendCommand(command.getBytes());
+    						lastCommand = command;
     						lastLeftAndRightCommand = LeftAndRightJoystickView.LEFT;
     					}
-					}else if(LeftAndRightJoystickView.RIGHT == leftAndRightDirection){
-						if(LeftAndRightJoystickView.RIGHT != lastLeftAndRightCommand){
-							sendCommand(COMM_RIGHT);
-							lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
-						}
+					}else if(LeftAndRightJoystickView.RIGHT == direction){
+    					if(lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_FORWARD), new ValueBit());
+    					}else if(lastFrontAndBackCommand == FrontAndBackJoystickView.BACK){
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT_BACK), new ValueBit());
+    					}else{
+    						command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.RIGHT), new ValueBit());
+    					}
+    					if(!command.equals(lastCommand)){
+    						sendCommand(command.getBytes());
+    						lastCommand = command;
+    						lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
+    					}
 					}
         		}
         	}
 			public void OnReleased() {}
 
 			public void OnReturnedToCenter() {
-				frontAndBackDirection = LeftAndRightJoystickView.ORIGIN;
-				frontAndBackPower = 0;
-                sendCommand(COMM_STOP);
-                lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
+        		Command command = null;
+				if(lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT){
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.FORWARD), new ValueBit());
+				}else if(lastFrontAndBackCommand == FrontAndBackJoystickView.BACK){
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.BACK), new ValueBit());
+				}else{
+					command = new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit());
+				}
+
+				if(!command.equals(lastCommand)){
+					sendCommand(command.getBytes());
+					lastCommand = command;
+					lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
+				}
 			}
         });
         
@@ -216,27 +247,19 @@ public class Main extends Activity {
             mLogText.setBackgroundColor(Color.argb(0, 0, 255, 0));//0~255透明度值
             mLogText.setTextColor(Color.argb(90, 0, 255, 0));
         }
-/**  Remove SeekBar
-        mSeekBar = (SeekBar)findViewById(R.id.gear1);
-        mSeekBar.setMax(MAX_GEAR_VALUE);
-        mSeekBar.setProgress(INIT_GEAR_VALUE);
-        mSeekBar.setOnSeekBarChangeListener(this);
-        buttonLen.setKeepScreenOn(true);
-*/        
         //connect  
         connectToRouter();
-        
     }
 
     private OnClickListener buttonLenClickListener = new OnClickListener() {
         public void onClick(View arg0) {            
               if (bLenon) {
                   bLenon = false;
-                  sendCommand(COMM_LEN_OFF);
+                  sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT), new CommandBit(CommandBit.LIGHT0), new ValueBit(0, 0)).getBytes());
                   buttonLen.setTextColor(Color.BLACK);
               } else  {
                   bLenon = true;
-                  sendCommand(COMM_LEN_ON);
+                  sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT), new CommandBit(CommandBit.LIGHT0), new ValueBit(0xff, 0)).getBytes());
                   buttonLen.setTextColor(Color.YELLOW);
               }
             
@@ -266,7 +289,8 @@ public class Main extends Activity {
                 if (null != mThreadClient)
                     mThreadClient.join(); // wait for secondary to finish
             } catch (InterruptedException e) {
-                mLogText.setText("关闭小车监听进程失败。。。" +  e.getMessage());
+                mLogText.setText("关闭小车监听进程失败");
+                Log.e("OnLongClickListener", e.getMessage());
             }
             
             connectToRouter();
@@ -275,17 +299,17 @@ public class Main extends Activity {
     };
     
     private void selfcheck() {
-        sendCommand(COMM_SELF_CHECK);
+        sendCommand(new Command(new CategoryBit(CategoryBit.CHECK), new CommandBit(CommandBit.SELF_CHECK), new ValueBit(0, 0)).getBytes());
     }
     
     private void sendCommand(byte[] data) {
+    	Log.i("sendCommand", Utils.castBytesToHexString(data));
         if ( mWifiStatus != STATUS_CONNECTED || null == mtcpSocket) {
-            mLogText.setText(R.string.STATE_ERROR +  data.toString());
             return;
         }
         
         if (!bReaddyToSendCmd) {
-        	mLogText.setText("自检中，请稍后。");
+        	mLogText.setText("自检中,请稍后…");
         	return;
         }else{
         	mLogText.setText("");
@@ -303,7 +327,7 @@ public class Main extends Activity {
     }
     
     private void handleCallback(byte[] command) {
-        if (null == command || command.length != Constant.COMMAND_LENGTH) {
+        if (null == command || command.length != Command.LENGTH) {
             return;
         }
         
@@ -311,7 +335,7 @@ public class Main extends Activity {
         byte cmd2 = command[2];
         //byte cmd3 = command[3];
         
-        if (command[0] != COMMAND_PERFIX || command[Constant.COMMAND_LENGTH-1] != COMMAND_PERFIX) {
+        if (command[0] != COMMAND_PERFIX || command[Command.LENGTH-1] != COMMAND_PERFIX) {
         	return;	
         }
         
@@ -322,7 +346,7 @@ public class Main extends Activity {
         
         switch (cmd2) {
         case (byte)0x01:
-            mLogText.setText("收到小车心跳包 ！");
+            mLogText.setText("收到小车心跳包!");
         	handleHeartBreak();
         	break;
         case (byte)0x02:
@@ -334,8 +358,8 @@ public class Main extends Activity {
         }
     }
     
-    private boolean isEffectiveWiFi(String wifiName){
-        return wifiName.toLowerCase().contains(WIFI_SSID_PERFIX);
+	private boolean isEffectiveWiFi(String wifiName){
+        return wifiName.toLowerCase().contains(WIFI_SSID_PERFIX.toLowerCase());
     }
     
     private int getWifiStatus () {
@@ -378,9 +402,9 @@ public class Main extends Activity {
             mThreadClient = new Thread(mRunnable);
             mThreadClient.start();
         } else if (WIFI_STATE_NOT_CONNECTED == status) {
-            mLogText.setText("初始化连接小车失败，wifi未连接，或者小车状态异常！");
+            mLogText.setText("wifi未连接,或者小车状态异常!");
         } else {
-            mLogText.setText("初始化连接小车失败，wifi未开启，请手动开启后重试！");
+            mLogText.setText("wifi未开启,请手动开启后重试!");
         }
     }
     private void initWifiConnection() {
@@ -413,7 +437,7 @@ public class Main extends Activity {
     private int appendBuffer (byte[] buffer, int len, byte[] dstBuffer, int dstLen) {
     	int j = 0;
     	int i = dstLen;
-    	for (i = dstLen; i < Constant.COMMAND_LENGTH && j < len; i++) {
+    	for (i = dstLen; i < Command.LENGTH && j < len; i++) {
     		dstBuffer[i] = buffer[j];
     		j++;
     	}
@@ -456,7 +480,7 @@ public class Main extends Activity {
                     	
 	                    printRecBuffer ("receive buffer", buffer, ret);
 	                    
-	                    if(ret > 0 && ret <= Constant.COMMAND_LENGTH ) { 
+	                    if(ret > 0 && ret <= Command.LENGTH ) { 
 	                    	long newTicket = System.currentTimeMillis();
 	                    	long ticketInterval = newTicket - lastTicket;
 	                    	Log.d("Socket", "time ticket interval =" + ticketInterval);
@@ -482,7 +506,7 @@ public class Main extends Activity {
 	                    	lastTicket = newTicket;
 	                    	printRecBuffer ("print command", command, commandLength);
 	                    	
-	                    	if (commandLength >= Constant.COMMAND_LENGTH) {
+	                    	if (commandLength >= Command.LENGTH) {
 	                    		Message msg = new Message();
 	                            msg.what = MSG_ID_CON_READ;
 	                            msg.obj = command;
@@ -515,7 +539,7 @@ public class Main extends Activity {
     
     Handler mHandler = new Handler()
     {                                        
-          public void handleMessage(Message msg)                                        
+          public void handleMessage(Message msg)
           {  
               Log.i("Main", "handle internal Message, id=" + msg.what);
               
@@ -524,11 +548,10 @@ public class Main extends Activity {
                   break;
               case MSG_ID_CON_READ:
                   byte[] command = (byte[])msg.obj;
-                  //mLogText.setText("handle response from router: " + command.toString() );
                   handleCallback(command);
                   break;
               case MSG_ID_ERR_INIT_READ:
-                  mLogText.setText("打开监听失败！！");
+                  mLogText.setText("打开监听失败!");
                   break;
               case MSG_ID_CON_SUCCESS:
                   mLogText.setText("成功连接到小车!");
@@ -543,13 +566,12 @@ public class Main extends Activity {
                   
                   Message msgHB2 = new Message();
                   msgHB2.what = MSG_ID_HEART_BREAK_SEND;//启动心跳包循环发送
-                  //mHandler.sendMessage(msgHB2);
+                  mHandler.sendMessage(msgHB2);
                   
                   break;
               case MSG_ID_START_CHECK:
-//                  mLogText.setText("开始进行自检，请稍等。");
                   bReaddyToSendCmd = true;
-                  //selfcheck();
+                  selfcheck();
                   break;
               case MSG_ID_ERR_CONN:
                   mLogText.setText("连接小车失败!");
@@ -564,7 +586,7 @@ public class Main extends Activity {
                   } else if (mHeartBreakCounter > 0) {
                       bHeartBreakFlag = true;
                   } else {
-                      mLogText.setText("心跳包出现异常，已经忽略***");
+                      mLogText.setText("心跳包出现异常,已经忽略");
                   }
                   Log.i("main", "handle MSG_ID_HEART_BREAK_RECEIVE :flag=" + bHeartBreakFlag);
                   
@@ -582,7 +604,7 @@ public class Main extends Activity {
                   msgSB.what = MSG_ID_HEART_BREAK_SEND;//循环向小车发送心跳包
                   Log.i("main", "handle MSG_ID_HEART_BREAK_SEND");
                   
-                  sendCommand(COMM_HEART_BREAK);
+                  sendCommand(new Command(new CategoryBit(CategoryBit.CHECK), new CommandBit(CommandBit.HEART_BREAK), new ValueBit(0, 0)).getBytes());
                   mHandler.sendMessageDelayed (msgSB, HEART_BREAK_SEND_INTERVAL);
             	  break;
               default :
@@ -631,25 +653,6 @@ public class Main extends Activity {
         mAnimationHandler.removeMessages(0);
     }
     
-    /** Remove SeekBar
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUserh) {
-        
-        if (Math.abs(progress - mSeekBarValue) > MIN_GEAR_STEP) {
-            mLogText.setText("change angle: " + progress);
-            mSeekBarValue = progress;
-            COMM_GEAR_CONTROL[3] = (byte)progress;
-            sendCommand(COMM_GEAR_CONTROL);
-        }
-    }
-
-    public void onStartTrackingTouch(SeekBar seekBar) {
-      
-    }
-
-    public void onStopTrackingTouch(SeekBar seekBar) {
-   
-    }
-    */
     public void onDestroy() {     
         if(null != mtcpSocket) {                
             try {
@@ -720,29 +723,5 @@ public class Main extends Activity {
 			 CAMERA_VIDEO_URL = CAMERA_VIDEO_URL_PREFIX + ROUTER_CONTROL_URL + CAMERA_VIDEO_URL_SUFFIX;
 		 }
 		 
-		 initLenControl(Constant.PREF_KEY_LEN_ON, Constant.DEFAULT_VALUE_LEN_ON);
-		 initLenControl(Constant.PREF_KEY_LEN_OFF, Constant.DEFAULT_VALUE_LEN_OFF);
-    }
-    
-    void initLenControl (String prefKey, String defaultValue) {
-   	 	SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-
-    	String comm = settings.getString(prefKey, defaultValue);
-    	CommandArray cmd = new CommandArray(comm);
-		if (cmd.isValid() ) {
-			if (Constant.PREF_KEY_LEN_ON.equalsIgnoreCase(prefKey)) {
-				COMM_LEN_ON[1] = cmd.mCmd1;
-				COMM_LEN_ON[2] = cmd.mCmd2;
-				COMM_LEN_ON[3] = cmd.mCmd3;
-			} else if (Constant.PREF_KEY_LEN_OFF.equalsIgnoreCase(prefKey)) {
-				COMM_LEN_OFF[1] = cmd.mCmd1;
-				COMM_LEN_OFF[2] = cmd.mCmd2;
-				COMM_LEN_OFF[3] = cmd.mCmd3;	
-			} else {
-				Log.i("Main", "unknow prefKey:" + prefKey); 
-			}
-		} else {
-			Log.i("Main", "error format of command:" + comm); 
-		}
     }
 }

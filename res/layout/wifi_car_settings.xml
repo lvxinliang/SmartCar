@@ -11,17 +11,4 @@
             android:key="pref_key_router_url"/>
     </PreferenceCategory>
     
-	<PreferenceCategory android:title="大灯设置" 
-	    android:key="pref_key_len_settings">
-        <EditTextPreference 
-            android:dialogTitle="大灯开启指令" 
-            android:defaultValue="FF040100FF" 
-            android:title="开启大灯指令" 
-            android:key="pref_key_len_on"/>
-        <EditTextPreference 
-            android:defaultValue="FF040000FF" 
-            android:title="关闭大灯指令" 
-            android:key="pref_key_len_off"/>
-    </PreferenceCategory>
-    
 </PreferenceScreen>

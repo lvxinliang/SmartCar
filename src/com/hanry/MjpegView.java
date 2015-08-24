@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -52,7 +53,6 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private static int mScreenHeight;
     private boolean resume = false;
     private boolean mtakePic = false;//flag for take a picture
-    private String mFileName = null;//file name to save picture
     
     private Context context;
 
@@ -129,7 +129,6 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
             while (mRun) {
                 if (surfaceDone) {
                     try {
-                    	if (false) Log.i("MjpegView", "thread run once++++");
                         c = mSurfaceHolder.lockCanvas();
                         synchronized (mSurfaceHolder) {
                             try {
@@ -153,7 +152,6 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                 	Log.i("MjpegView", "mtakePic  " + fName);
                                 	int res = saveBitmapToFile(bm, fName);
                                 	BroardCastResult(res, fName);
-                                	mFileName = fName;
                                 	mtakePic = false;
                                 }
                                 destRect = destRect(mScreenWidth, mScreenHeight);
@@ -324,7 +322,8 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     	}
     }
     
-    private String generateFileName() {
+    @SuppressLint("SimpleDateFormat")
+	private String generateFileName() {
     	File sdcard;
     	boolean sdCardExist = Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
     	if (sdCardExist) 
