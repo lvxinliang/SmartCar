@@ -41,7 +41,7 @@
             android:label="@string/title_activity_wifi_car_settings" 
             android:screenOrientation="landscape" >
         </activity>
-        <receiver android:name="com.hanry.HanryReceiver" > 
+        <receiver android:name="com.hanry.PhotoSave" > 
 		    <intent-filter> 
 		        <action android:name="hanry.take_picture_done" /> 
 		    </intent-filter> 

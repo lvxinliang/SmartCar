@@ -1,4 +1,4 @@
-package com.hanry.views;
+package com.hanry.component;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -13,17 +13,17 @@ import android.view.MotionEvent;
 import android.view.View;
 
 @SuppressLint({ "InlinedApi", "NewApi", "DrawAllocation" })
-public class FrontAndBackJoystickView extends View {
+public class LeftAndRightJoystickView extends View {
 
 	@SuppressLint("DrawAllocation")
 	// Constants
 	public final static int INVALID_POINTER_ID = -1;
 	public final static long DEFAULT_LOOP_INTERVAL = 100; // 100 ms
 	public final static int ORIGIN = 1;
-	public final static int FRONT = 3;
-	public final static int BACK = 5;
+	public final static int LEFT = 3;
+	public final static int RIGHT = 5;
 	// Variables
-	private OnFrontAndBackJoystickMoveListener onJoystickMoveListener; // Listener
+	private OnLeftAndRightJoystickMoveListener onJoystickMoveListener; // Listener
 	private int pointerId = INVALID_POINTER_ID;
 	private int xPosition = 0; // Touch x position
 	private int yPosition = 0; // Touch y position
@@ -40,19 +40,19 @@ public class FrontAndBackJoystickView extends View {
 	private int powerResolution = 1;
 	private boolean autoReturnToCenter;
 
-	public FrontAndBackJoystickView(Context context) {
+	public LeftAndRightJoystickView(Context context) {
 		super(context);
 	}
 
-	public FrontAndBackJoystickView(Context context, AttributeSet attrs) {
+	public LeftAndRightJoystickView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		initFrontAndBackJoystickView();
+		initLeftAndRightJoystickView();
 	}
 
-	public FrontAndBackJoystickView(Context context, AttributeSet attrs,
+	public LeftAndRightJoystickView(Context context, AttributeSet attrs,
 			int defaultStyle) {
 		super(context, attrs, defaultStyle);
-		initFrontAndBackJoystickView();
+		initLeftAndRightJoystickView();
 	}
 
 	public void setPointerId(int id) {
@@ -71,7 +71,7 @@ public class FrontAndBackJoystickView extends View {
 		return autoReturnToCenter;
 	}
 
-	protected void initFrontAndBackJoystickView() {
+	protected void initLeftAndRightJoystickView() {
 		backgroundCirclePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		backgroundCirclePaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
@@ -143,29 +143,29 @@ public class FrontAndBackJoystickView extends View {
 				backgroundCirclePaint);
 
 		this.arrowPath.reset();
-		this.arrowPath.moveTo((int) centerX, (int) centerY - joystickRadius);
-		this.arrowPath.lineTo((int) centerX - 15, (int) centerY
-				- joystickRadius + 15);
-		this.arrowPath.lineTo((int) centerX, (int) centerY - joystickRadius
-				+ 10);
-		this.arrowPath.lineTo((int) centerX + 15, (int) centerY
-				- joystickRadius + 15);
+		this.arrowPath.moveTo((int) centerX - joystickRadius, (int) centerY);
+		this.arrowPath.lineTo((int) centerX - joystickRadius + 15,
+				(int) centerY - 15);
+		this.arrowPath.lineTo((int) centerX - joystickRadius + 10,
+				(int) centerY);
+		this.arrowPath.lineTo((int) centerX - joystickRadius + 15,
+				(int) centerY + 15);
 		this.arrowPath.close();
 		canvas.drawPath(arrowPath, arrowPaint);
 
 		this.arrowPath.reset();
-		this.arrowPath.moveTo((int) centerX, (int) centerY + joystickRadius);
-		this.arrowPath.lineTo((int) centerX - 15, (int) centerY
-				+ joystickRadius - 15);
-		this.arrowPath.lineTo((int) centerX, (int) centerY + joystickRadius
-				- 10);
-		this.arrowPath.lineTo((int) centerX + 15, (int) centerY
-				+ joystickRadius - 15);
+		this.arrowPath.moveTo((int) centerX + joystickRadius, (int) centerY);
+		this.arrowPath.lineTo((int) centerX + joystickRadius - 15,
+				(int) centerY - 15);
+		this.arrowPath.lineTo((int) centerX + joystickRadius - 10,
+				(int) centerY);
+		this.arrowPath.lineTo((int) centerX + joystickRadius - 15,
+				(int) centerY + 15);
 		this.arrowPath.close();
 		canvas.drawPath(arrowPath, arrowPaint);
 
 		// painting the handler button
-		canvas.drawCircle((int) centerX, yPosition, buttonRadius, handlerButton);
+		canvas.drawCircle(xPosition, (int) centerY, buttonRadius, handlerButton);
 	}
 
 	private void returnHandleToCenter() {
@@ -234,7 +234,7 @@ public class FrontAndBackJoystickView extends View {
 				this.yPosition = (int) y;
 			}
 
-			if(Math.abs(this.yPosition - this.centerY) > 5){
+			if(Math.abs(this.xPosition - this.centerX) > 5){
 				reportOnMoved();
 			}
 			invalidate();
@@ -299,31 +299,22 @@ public class FrontAndBackJoystickView extends View {
 	}
 
 	private int getPower() {
-		return (int) ((Math.abs(this.yPosition - centerY) / this.joystickRadius) * 100);
+		return (int) ((Math.abs(this.xPosition - centerX) / this.joystickRadius) * 100);
 	}
 
 	private int getDirection() {
-		double val = yPosition - centerY;
+		double val = xPosition - centerX;
 		if (val < 1 && val > -1) {
 			return ORIGIN;
 		}
 		if (val >= 1) {
-			return BACK;
+			return RIGHT;
 		}
-		return FRONT;
+		return LEFT;
 	}
 
-	public void setOnFrontAndBackJoystickMoveListener(
-			OnFrontAndBackJoystickMoveListener listener) {
+	public void setOnLeftAndRightJoystickMoveListener(
+			OnLeftAndRightJoystickMoveListener listener) {
 		this.onJoystickMoveListener = listener;
-	}
-
-	public static interface OnFrontAndBackJoystickMoveListener {
-		public void onValueChanged(int power, int direction);
-
-		public void OnReleased();
-
-		public void OnReturnedToCenter();
-
 	}
 }

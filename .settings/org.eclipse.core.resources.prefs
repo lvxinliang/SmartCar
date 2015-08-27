@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/com/hanry/Main.java=GBK
-encoding//src/com/hanry/views/FrontAndBackJoystickView.java=UTF-8
-encoding//src/com/hanry/views/LeftAndRightJoystickView.java=UTF-8
+encoding//src/com/hanry/component/FrontAndBackJoystickView.java=UTF-8
+encoding//src/com/hanry/component/LeftAndRightJoystickView.java=UTF-8
 encoding/src=GBK

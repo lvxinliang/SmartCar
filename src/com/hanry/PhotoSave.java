@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-public class HanryReceiver extends BroadcastReceiver 
+public class PhotoSave extends BroadcastReceiver 
 { 
     @Override 
     public void onReceive(Context context, Intent intent) 

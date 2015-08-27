@@ -1,17 +1,16 @@
-package com.hanry;
+package com.hanry.component;
 
+import android.graphics.Color;
+import android.view.View;
+import android.view.View.OnClickListener;
+
+import com.hanry.Main;
 import com.hanry.command.CategoryBit;
 import com.hanry.command.Command;
 import com.hanry.command.CommandBit;
 import com.hanry.command.ValueBit;
 
-import android.graphics.Color;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.view.View;
-import android.view.View.OnClickListener;
-
-public class ButtonGravityClickListener implements OnClickListener {
+public class GravityButtonClickListener implements OnClickListener {
 	private Main main = null;
 
 	public Main getMain() {
@@ -22,11 +21,11 @@ public class ButtonGravityClickListener implements OnClickListener {
 		this.main = main;
 	}
 
-	public ButtonGravityClickListener(Main main) {
+	public GravityButtonClickListener(Main main) {
 		this.main = main;
 	}
 
-	public ButtonGravityClickListener() {
+	public GravityButtonClickListener() {
 		super();
 	}
 
@@ -35,14 +34,12 @@ public class ButtonGravityClickListener implements OnClickListener {
 			main.setEnableGravity(false);
 			main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit()).getBytes());
 			main.getEnableGravityButton().setTextColor(Color.BLACK);
-			main.sensorManager.unregisterListener(main);
+			main.getDirectionSensorEventListener().unregisterListener();
 			main.toShowComponent();
 		} else {
 			main.setEnableGravity(true);
 			main.getEnableGravityButton().setTextColor(Color.YELLOW);
-			main.sensorManager.registerListener(main, main.sensorManager
-					.getDefaultSensor(Sensor.TYPE_ORIENTATION),
-					SensorManager.SENSOR_DELAY_GAME);
+			main.getDirectionSensorEventListener().registerListener();
 			main.toHideComponent();
 		}
 	}

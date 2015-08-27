@@ -13,7 +13,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true" />
 
-    <com.hanry.views.FrontAndBackJoystickView
+    <com.hanry.component.FrontAndBackJoystickView
         android:id="@+id/frontAndBackJoystickView"
         android:layout_width="200dip"
         android:layout_height="200dip"
@@ -21,7 +21,7 @@
         android:layout_alignParentLeft="true"
         android:layout_gravity="center_horizontal" />
 
-    <com.hanry.views.LeftAndRightJoystickView
+    <com.hanry.component.LeftAndRightJoystickView
         android:id="@+id/leftAndRightJoystickView"
         android:layout_width="200dip"
         android:layout_height="200dip"
