@@ -139,7 +139,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                             	
                             	if(null == mIn) { //URL无效，不能获取视频流
                             		//显示无效图片
-                            		bm = BitmapFactory.decodeResource(getResources(), R.drawable.video_bg);
+                            		bm = BitmapFactory.decodeResource(getResources(), R.drawable.radialback);
                             		mtakePic = false;
                             		showFps = false;
                             	}else{
