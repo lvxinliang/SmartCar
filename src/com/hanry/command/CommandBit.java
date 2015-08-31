@@ -1,5 +1,7 @@
 package com.hanry.command;
 
+import com.hanry.Utils;
+
 public class CommandBit {
 	
 	private byte commandBit = 0;

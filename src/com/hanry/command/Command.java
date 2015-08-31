@@ -1,5 +1,7 @@
 package com.hanry.command;
 
+import com.hanry.Utils;
+
 
 public class Command {
 	public static final byte STARTBIT = (byte) 0xff;

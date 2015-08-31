@@ -1,5 +1,7 @@
 package com.hanry.command;
 
+import com.hanry.Utils;
+
 public class CategoryBit {
 
 	public static final byte DIRECTION = 0x00;

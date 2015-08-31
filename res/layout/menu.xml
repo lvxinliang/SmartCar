@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="50dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+            android:id="@+id/thumbnailOneTest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            bootstrap:bct_image="@drawable/circle_logo"
+            bootstrap:bct_size="xlarge" />
+       
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="奇点极客工作室"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="280dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="50dp"
+        android:layout_weight="0.20"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="开始操控"
+            bootstrapbutton:bb_icon_right="fa-rocket"
+            bootstrapbutton:bb_roundedCorners="true"
+            bootstrapbutton:bb_text_gravity="center"
+            bootstrapbutton:bb_type="success" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/settingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="选项设置"
+            bootstrapbutton:bb_icon_right="fa-cog"
+            bootstrapbutton:bb_roundedCorners="true"
+            bootstrapbutton:bb_text_gravity="center"
+            bootstrapbutton:bb_type="warning" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/aboutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="关于我们"
+            bootstrapbutton:bb_icon_right="fa-book"
+            bootstrapbutton:bb_roundedCorners="true"
+            bootstrapbutton:bb_text_gravity="center"
+            bootstrapbutton:bb_type="danger" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/exitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="退出应用"
+            bootstrapbutton:bb_icon_right="fa-sign-out"
+            bootstrapbutton:bb_roundedCorners="true"
+            bootstrapbutton:bb_text_gravity="center"
+            bootstrapbutton:bb_type="inverse" />
+    </LinearLayout>
+</LinearLayout>

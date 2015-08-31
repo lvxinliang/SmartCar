@@ -1,5 +1,7 @@
 package com.hanry.command;
 
+import com.hanry.Utils;
+
 /**
  ** 6~9位表示取值位。
  ** 当分类位为：`00000000`方向盘类

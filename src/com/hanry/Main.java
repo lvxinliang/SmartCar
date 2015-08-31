@@ -22,13 +22,11 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.FontAwesomeText;
 import com.hanry.command.CategoryBit;
 import com.hanry.command.Command;
 import com.hanry.command.CommandBit;
-import com.hanry.command.Utils;
 import com.hanry.command.ValueBit;
 import com.hanry.component.DirectionSensorEventListener;
 import com.hanry.component.FrontAndBackJoystickView;
@@ -47,7 +45,6 @@ public class Main extends Activity {
 	private final int MSG_ID_CON_SUCCESS = 1005;
 	private final int MSG_ID_START_CHECK = 1006;
 	private final int MSG_ID_ERR_INIT_READ = 1007;
-	private final int MSG_ID_CLEAR_QUIT_FLAG = 1008;
 	private final int MSG_ID_LOOP_START = 1010;
 	private final int MSG_ID_HEART_BREAK_RECEIVE = 1011;
 	private final int MSG_ID_HEART_BREAK_SEND = 1012;
@@ -56,17 +53,16 @@ public class Main extends Activity {
 	private final int WARNING_ICON_OFF_DURATION_MSEC = 600;
 	private final int WARNING_ICON_ON_DURATION_MSEC = 800;
 	private final int HEART_BREAK_CHECK_INTERVAL = 8000;// ms
-	private final int QUIT_BUTTON_PRESS_INTERVAL = 2500;// ms
 	private final int HEART_BREAK_SEND_INTERVAL = 2500;// ms
 
 	private String CAMERA_VIDEO_URL = "http://192.168.2.1:8080/?action=stream";
 	private String ROUTER_CONTROL_URL = "192.168.2.1";
+	private String WIFI_SSID_PERFIX = "Singular_Wifi-Car"; // SmartCar
 	private int ROUTER_CONTROL_PORT = 2001;
-	private final String WIFI_SSID_PERFIX = "Singular_Wifi-Car"; // SmartCar
 
 	private FontAwesomeText enableGravityButton;
 	private FontAwesomeText TakePicture;
-	private FontAwesomeText buttonSetting;
+	private FontAwesomeText buttonBack;
 	private FontAwesomeText buttonLen;
 	private TextView notifyText;
 	private FrontAndBackJoystickView frontAndBackJoystick;
@@ -77,7 +73,6 @@ public class Main extends Activity {
 	private boolean isReaddyToSendCmd = false;
 	private boolean isLightOn = false;
 	private boolean enableGravity = false;
-	private boolean toQuit = false;
 	private boolean haveReceivedHeartBreak = false;
 	private int recvHeartBreakCounter = 0;
 	private int lastrecvHeartBreakCounter = 0;
@@ -103,8 +98,8 @@ public class Main extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.main);
 
-		buttonSetting = (FontAwesomeText) findViewById(R.id.buttonSetting);
-		buttonSetting.setOnClickListener(buttonSettingClickListener);
+		buttonBack = (FontAwesomeText) findViewById(R.id.buttonBack);
+		buttonBack.setOnClickListener(buttonBackClickListener);
 
 		buttonLen = (FontAwesomeText) findViewById(R.id.btnLen);
 		buttonLen.setOnClickListener(buttonLenClickListener);
@@ -355,10 +350,10 @@ public class Main extends Activity {
 		}
 	};
 
-	private OnClickListener buttonSettingClickListener = new OnClickListener() {
+	private OnClickListener buttonBackClickListener = new OnClickListener() {
 		public void onClick(View arg0) {
 			Intent setIntent = new Intent();
-			setIntent.setClass(appContext, WifiCarSettings.class);
+			setIntent.setClass(appContext, MenuActivity.class);
 			startActivity(setIntent);
 		}
 	};
@@ -640,9 +635,6 @@ public class Main extends Activity {
 			case MSG_ID_ERR_CONN:
 				notifyText.setText("连接小车失败!");
 				break;
-			case MSG_ID_CLEAR_QUIT_FLAG:
-				toQuit = false;
-				break;
 			case MSG_ID_HEART_BREAK_RECEIVE:
 				if (recvHeartBreakCounter == 0) {
 					haveReceivedHeartBreak = false;
@@ -772,32 +764,11 @@ public class Main extends Activity {
 		}
 	}
 
-	@Override
-	public void onBackPressed() {
-		if (toQuit) {
-			finish();
-		} else {
-			toQuit = true;
-			Toast.makeText(appContext, "请再次按返回键退出应用", Toast.LENGTH_LONG).show();
-			Message msg = new Message();
-			msg.what = MSG_ID_CLEAR_QUIT_FLAG;
-			mHandler.sendMessageDelayed(msg, QUIT_BUTTON_PRESS_INTERVAL);
-		}
-	}
-
 	void initSettings() {
-		SharedPreferences settings = PreferenceManager
-				.getDefaultSharedPreferences(this);
-
-		String RouterUrl = settings.getString(Constant.PREF_KEY_ROUTER_URL,
-				Constant.DEFAULT_VALUE_ROUTER_URL);
-		int index = RouterUrl.indexOf(":");
-		String routerPort = "";
-		if (index > 0) {
-			ROUTER_CONTROL_URL = RouterUrl.substring(0, index);
-			routerPort = RouterUrl.substring(index + 1, RouterUrl.length());
-			ROUTER_CONTROL_PORT = Integer.parseInt(routerPort);
-		}
+		SharedPreferences sharedPreferences = getSharedPreferences(SettingsActivity.CONFIG_FILE_NAME, Activity.MODE_PRIVATE); 
+		ROUTER_CONTROL_URL = sharedPreferences.getString(SettingsActivity.IP_ADDR_KEY, SettingsActivity.IP_ADDR_DEFAULT);
+		ROUTER_CONTROL_PORT = Integer.parseInt(sharedPreferences.getString(SettingsActivity.NET_PORT_KEY, SettingsActivity.NET_PORT_DEFAULT));
+		WIFI_SSID_PERFIX = sharedPreferences.getString(SettingsActivity.WIFI_SSID_KEY, SettingsActivity.WIFI_SSID_DEFAULT);
 
 		if (ROUTER_CONTROL_URL != null && !"".equals(ROUTER_CONTROL_URL)) {
 			CAMERA_VIDEO_URL = CAMERA_VIDEO_URL_PREFIX + ROUTER_CONTROL_URL

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:fontawesometext="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <com.beardedhen.androidbootstrap.FontAwesomeText
+        android:id="@+id/buttonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:alpha="0.5"
+        android:textColor="@color/black"
+        android:textSize="32sp"
+        fontawesometext:fa_icon="fa-reply" />
+
+    <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/buttonBack"
+        android:layout_centerHorizontal="true"
+        bootstrap:bct_image="@drawable/circle_logo"
+        bootstrap:bct_size="large" />
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/logo"
+        android:layout_centerHorizontal="true"
+        android:textColor="#646464"
+        android:text="Smart Car V.10" />
+    
+    <TextView
+        android:id="@+id/t3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/version"
+        android:layout_centerHorizontal="true"
+        android:textColor="#242424"
+        android:text="版本更新内容:\n1.支持多点触控\n2.支持9方向重力感应" />
+    <TextView
+        android:id="@+id/t3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/version"
+        android:layout_centerHorizontal="true"
+        android:textColor="#242424"
+        android:text="版本更新内容:\n1.支持多点触控\n2.支持9方向重力感应" />
+    
+        
+    <TextView
+        android:id="@+id/t2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/copyright1"
+        android:layout_marginBottom="30dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#242424"
+        android:text="交流QQ群:361959851" />
+    
+    
+    <TextView
+        android:id="@+id/copyright1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_above="@+id/copyright2"
+        android:layout_centerHorizontal="true"
+        android:textColor="#646464"
+        android:text="版权归奇点极客工作室所有" />
+    
+    <TextView
+        android:id="@+id/copyright2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:text="Copyright © 2011-2015 Singular Geek Studio. All Rights Reserved."
+        android:textColor="#969696" />
+    
+</RelativeLayout>

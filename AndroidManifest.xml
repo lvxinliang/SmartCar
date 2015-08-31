@@ -18,6 +18,8 @@
     <!-- 在sdcard中创建/删除文件的权限 -->
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" >
     </uses-permission>
+    <uses-permission android:name="android.permission.RESTART_PACKAGES">
+    </uses-permission>
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -27,10 +29,11 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
         <activity
-            android:name="com.hanry.Welcome"
+            android:name="com.hanry.WelcomeActivity"
             android:label="@string/welcomePage"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="landscape" >
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -41,14 +44,32 @@
             android:name="com.hanry.Main"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
+            android:launchMode="singleTask"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".WifiCarSettings"
-            android:label="@string/title_activity_wifi_car_settings"
-            android:screenOrientation="landscape" >
+            android:name="com.hanry.MenuActivity"
+            android:label="@string/menuPage"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" >
         </activity>
-
+        <activity
+            android:name="com.hanry.SettingsActivity"
+            android:label="@string/settingsPage"
+            android:launchMode="singleTask"
+            android:focusable="true"
+			android:focusableInTouchMode="true"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.hanry.AboutActivity"
+            android:label="@string/aboutPage"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen"
+            android:screenOrientation="portrait" >
+        </activity>
         <receiver android:name="com.hanry.PhotoSave" >
             <intent-filter>
                 <action android:name="hanry.take_picture_done" />

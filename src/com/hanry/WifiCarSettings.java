@@ -16,7 +16,7 @@ public class WifiCarSettings extends PreferenceActivity implements OnSharedPrefe
 	public void onCreate(Bundle savedInstanceState) {  
 		super.onCreate(savedInstanceState);  
 		// 所的的值将会自动保存到SharePreferences  
-		addPreferencesFromResource(R.layout.settings);
+		addPreferencesFromResource(R.layout.settings_bak);
 		
 		
 		mPrefRouterUrl = (EditTextPreference)findPreference(Constant.PREF_KEY_ROUTER_URL);

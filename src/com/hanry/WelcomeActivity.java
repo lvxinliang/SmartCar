@@ -11,7 +11,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class Welcome extends Activity {
+public class WelcomeActivity extends Activity {
 
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -29,10 +29,10 @@ public class Welcome extends Activity {
 		handler.postDelayed(new Runnable() {
 			public void run() {
 				finish();
-				Intent intent = new Intent(Welcome.this, Main.class);
-				Welcome.this.startActivity(intent);
+				Intent intent = new Intent(WelcomeActivity.this, MenuActivity.class);
+				WelcomeActivity.this.startActivity(intent);
 			}
-		}, 4000);
+		}, 2500);
 	}
 
 	private void StartAnimations() {
