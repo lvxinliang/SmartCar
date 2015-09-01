@@ -32,7 +32,7 @@ public class GravityButtonClickListener implements OnClickListener {
 	public void onClick(View arg0) {
 		if (main.getEnableGravity()) {
 			main.setEnableGravity(false);
-			main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit()).getBytes());
+			main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION), new CommandBit(CommandBit.STOP), new ValueBit()));
 			main.getEnableGravityButton().setTextColor(Color.BLACK);
 			main.getDirectionSensorEventListener().unregisterListener();
 			main.toShowComponent();

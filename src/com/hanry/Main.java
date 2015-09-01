@@ -139,7 +139,7 @@ public class Main extends Activity {
 											new ValueBit());
 								}
 								if (!command.equals(lastCommand)) {
-									sendCommand(command.getBytes());
+									sendCommand(command);
 									lastCommand = command;
 									lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
 								}
@@ -163,7 +163,7 @@ public class Main extends Activity {
 											new ValueBit());
 								}
 								if (!command.equals(lastCommand)) {
-									sendCommand(command.getBytes());
+									sendCommand(command);
 									lastCommand = command;
 									lastFrontAndBackCommand = FrontAndBackJoystickView.BACK;
 								}
@@ -192,7 +192,7 @@ public class Main extends Activity {
 						}
 
 						if (!command.equals(lastCommand)) {
-							sendCommand(command.getBytes());
+							sendCommand(command);
 							lastCommand = command;
 							lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
 						}
@@ -224,7 +224,7 @@ public class Main extends Activity {
 											new ValueBit());
 								}
 								if (!command.equals(lastCommand)) {
-									sendCommand(command.getBytes());
+									sendCommand(command);
 									lastCommand = command;
 									lastLeftAndRightCommand = LeftAndRightJoystickView.LEFT;
 								}
@@ -248,7 +248,7 @@ public class Main extends Activity {
 											new ValueBit());
 								}
 								if (!command.equals(lastCommand)) {
-									sendCommand(command.getBytes());
+									sendCommand(command);
 									lastCommand = command;
 									lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
 								}
@@ -276,7 +276,7 @@ public class Main extends Activity {
 						}
 
 						if (!command.equals(lastCommand)) {
-							sendCommand(command.getBytes());
+							sendCommand(command);
 							lastCommand = command;
 							lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
 						}
@@ -328,14 +328,13 @@ public class Main extends Activity {
 			if (isLightOn) {
 				isLightOn = false;
 				sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT),
-						new CommandBit(CommandBit.LIGHT0), new ValueBit(0, 0))
-						.getBytes());
+						new CommandBit(CommandBit.LIGHT0), new ValueBit(0, 0)));
 				buttonLen.setTextColor(Color.BLACK);
 			} else {
 				isLightOn = true;
 				sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT),
 						new CommandBit(CommandBit.LIGHT0),
-						new ValueBit(0xff, 0)).getBytes());
+						new ValueBit(0xff, 0)));
 				buttonLen.setTextColor(Color.YELLOW);
 			}
 
@@ -360,12 +359,13 @@ public class Main extends Activity {
 
 	private void selfcheck() {
 		sendCommand(new Command(new CategoryBit(CategoryBit.CHECK),
-				new CommandBit(CommandBit.SELF_CHECK), new ValueBit(0, 0))
-				.getBytes());
+				new CommandBit(CommandBit.SELF_CHECK), new ValueBit(0, 0)));
 	}
 
-	public void sendCommand(byte[] data) {
-		Log.i("sendCommand", Utils.castBytesToHexString(data));
+	public void sendCommand(Command cmd) {
+		if (cmd.equals(lastCommand)) {
+			return;
+		}
 		if (connectionState != ConnectionState.STATUS_CONNECTED || null == tcpSocket) {
 			return;
 		}
@@ -378,7 +378,8 @@ public class Main extends Activity {
 		}
 
 		try {
-			tcpSocket.sendMsg(data);
+			tcpSocket.sendMsg(cmd.getBytes());
+			Log.i("sendCommand", Utils.castBytesToHexString(cmd.getBytes()));
 			// Toast.makeText(mContext, "发送成功", 1);
 		} catch (Exception e) {
 			Log.i("Socket", e.getMessage() != null ? e.getMessage().toString()
@@ -386,6 +387,7 @@ public class Main extends Activity {
 			// Toast.makeText(mContext, "发送消息给小车失败  ：" + e.getMessage(),
 			// Toast.LENGTH_SHORT).show();
 		}
+		lastCommand = cmd;
 
 	}
 
@@ -656,14 +658,16 @@ public class Main extends Activity {
 				mHandler.sendMessageDelayed(msgHB, HEART_BREAK_CHECK_INTERVAL);
 				break;
 			case MSG_ID_HEART_BREAK_SEND:
+				/** 暂时取消心跳包发送
 				Message msgSB = new Message();
 				msgSB.what = MSG_ID_HEART_BREAK_SEND;// 循环向小车发送心跳包
 				Log.i("main", "handle MSG_ID_HEART_BREAK_SEND");
 
 				sendCommand(new Command(new CategoryBit(CategoryBit.CHECK),
 						new CommandBit(CommandBit.HEART_BREAK), new ValueBit(0,
-								0)).getBytes());
+								0)));
 				mHandler.sendMessageDelayed(msgSB, HEART_BREAK_SEND_INTERVAL);
+				*/
 				break;
 			default:
 				break;

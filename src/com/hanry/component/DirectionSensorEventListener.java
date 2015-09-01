@@ -53,37 +53,37 @@ public class DirectionSensorEventListener implements SensorEventListener {
 				// left_forward
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit())
-						.getBytes());
+						);
 
 			} else if (xValue < -TRIGGER_VALUE) {
 				// right_forward
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.RIGHT_FORWARD),
-						new ValueBit()).getBytes());
+						new ValueBit()));
 			} else {
 				// forward
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.FORWARD), new ValueBit())
-						.getBytes());
+						);
 
 			}
 		} else if (yValue > TRIGGER_VALUE) {
 			if (xValue > TRIGGER_VALUE) {
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.LEFT_BACK), new ValueBit())
-						.getBytes());
+						);
 				// left_back
 
 			} else if (xValue < -TRIGGER_VALUE) {
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.RIGHT_BACK), new ValueBit())
-						.getBytes());
+						);
 				// right_back
 			} else {
 				// back
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.BACK), new ValueBit())
-						.getBytes());
+						);
 
 			}
 		}
@@ -92,36 +92,36 @@ public class DirectionSensorEventListener implements SensorEventListener {
 				// right_forward
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.RIGHT_FORWARD),
-						new ValueBit()).getBytes());
+						new ValueBit()));
 
 			} else if (yValue > TRIGGER_VALUE) {
 				// right_back
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.RIGHT_BACK), new ValueBit())
-						.getBytes());
+						);
 			} else {
 				// right
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.RIGHT), new ValueBit())
-						.getBytes());
+						);
 			}
 		} else if (xValue > TRIGGER_VALUE) {
 			if (yValue < -TRIGGER_VALUE) {
 				// left_forward
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.LEFT_FORWARD), new ValueBit())
-						.getBytes());
+						);
 
 			} else if (yValue > TRIGGER_VALUE) {
 				// left_back
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.LEFT_BACK), new ValueBit())
-						.getBytes());
+						);
 			} else {
 				// left
 				this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
 						new CommandBit(CommandBit.LEFT), new ValueBit())
-						.getBytes());
+						);
 			}
 		}
 
@@ -129,7 +129,7 @@ public class DirectionSensorEventListener implements SensorEventListener {
 				&& yValue > -TRIGGER_VALUE && yValue < TRIGGER_VALUE) {
 			// stop
 			this.main.sendCommand(new Command(new CategoryBit(CategoryBit.DIRECTION),
-					new CommandBit(CommandBit.STOP), new ValueBit()).getBytes());
+					new CommandBit(CommandBit.STOP), new ValueBit()));
 		}
 	}
 
