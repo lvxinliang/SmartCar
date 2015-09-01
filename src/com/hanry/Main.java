@@ -328,13 +328,13 @@ public class Main extends Activity {
 			if (isLightOn) {
 				isLightOn = false;
 				sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT),
-						new CommandBit(CommandBit.LIGHT0), new ValueBit(0, 0)));
+						new CommandBit(CommandBit.LIGHT0), new ValueBit(ValueBit.TURNOFF, 0)));
 				buttonLen.setTextColor(Color.BLACK);
 			} else {
 				isLightOn = true;
 				sendCommand(new Command(new CategoryBit(CategoryBit.LIGHT),
 						new CommandBit(CommandBit.LIGHT0),
-						new ValueBit(0xff, 0)));
+						new ValueBit(ValueBit.TURNON, 0)));
 				buttonLen.setTextColor(Color.YELLOW);
 			}
 

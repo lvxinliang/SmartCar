@@ -8,7 +8,7 @@ import com.hanry.Utils;
  *   * 6~7位表示速度百分比，范围为十进制`0~100`，其中0表示速度为0
  *   * 8~9位表示转向舵机角度，范围为为十进制`0~180`，其中90表示舵机位于中心位置
  ** 当分类位为：`00001100`灯光类
- *   * 6~7表示灯管开关命令，其中`00`表示关灯，`FF`表示关灯
+ *   * 6~7表示灯管开关命令，其中`00`表示关灯，`0F`表示关灯
  *   * 8~9位表示亮度值
  */
 public class ValueBit {
@@ -18,7 +18,7 @@ public class ValueBit {
 	
 	//灯光类
 	public static final int TURNOFF = 0x0;
-	public static final int TURNON = (byte)0xFF;
+	public static final int TURNON = 0x0F;
 	public static final int LIGHTENESS0 = 0x0;
 
 	private int highByte = SPEED0;
