@@ -42,28 +42,17 @@
         android:id="@+id/t3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_below="@+id/version"
+        android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
+        android:textSize="18sp"
         android:textColor="#242424"
         android:text="版本更新内容:\n1.支持多点触控\n2.支持9方向重力感应" />
-    <TextView
-        android:id="@+id/t3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_below="@+id/version"
-        android:layout_centerHorizontal="true"
-        android:textColor="#242424"
-        android:text="版本更新内容:\n1.支持多点触控\n2.支持9方向重力感应" />
-    
         
     <TextView
         android:id="@+id/t2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/copyright1"
-        android:layout_marginBottom="30dp"
         android:layout_centerHorizontal="true"
         android:textColor="#242424"
         android:text="交流QQ群:361959851" />
