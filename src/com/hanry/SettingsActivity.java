@@ -88,7 +88,10 @@ public class SettingsActivity extends Activity{
 		
 		resetButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				loadConfig();
+				ipAddressText.setText(IP_ADDR_DEFAULT);
+				netPortText.setText(NET_PORT_DEFAULT);
+				wifiSsidText.setText(WIFI_SSID_DEFAULT);
+				ipAddressText.setTextColor(Color.BLACK);
 			}
 		});
 	}
