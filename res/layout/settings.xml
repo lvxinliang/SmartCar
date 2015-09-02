@@ -8,15 +8,27 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+<RelativeLayout 
+    android:background="@drawable/navigation_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp">
     <com.beardedhen.androidbootstrap.FontAwesomeText
         android:id="@+id/buttonBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:alpha="0.5"
-        android:textColor="@color/black"
-        android:textSize="32sp"
+        android:textColor="@color/white"
+        android:textSize="26sp"
         fontawesometext:fa_icon="fa-reply" />
+	<TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:text="选项设置" />
+</RelativeLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -30,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="50dp"
             android:orientation="horizontal" >
 
             <TextView

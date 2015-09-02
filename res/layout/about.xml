@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrap="http://schemas.android.com/apk/res-auto"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     xmlns:fontawesometext="http://schemas.android.com/apk/res-auto"
@@ -8,22 +8,38 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+<RelativeLayout 
+    android:background="@drawable/navigation_bg"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp">
     <com.beardedhen.androidbootstrap.FontAwesomeText
         android:id="@+id/buttonBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:alpha="0.5"
-        android:textColor="@color/black"
-        android:textSize="32sp"
+        android:textColor="@color/white"
+        android:textSize="26sp"
         fontawesometext:fa_icon="fa-reply" />
+	<TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:text="关于我们" />
+</RelativeLayout>
 
+<RelativeLayout 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
     <com.beardedhen.androidbootstrap.BootstrapCircleThumbnail
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_below="@+id/buttonBack"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
         bootstrap:bct_image="@drawable/circle_logo"
         bootstrap:bct_size="large" />
@@ -78,5 +94,5 @@
         android:layout_centerHorizontal="true"
         android:text="Copyright © 2011-2015 Singular Geek Studio. All Rights Reserved."
         android:textColor="#969696" />
-    
-</RelativeLayout>
+	</RelativeLayout>
+</LinearLayout>
