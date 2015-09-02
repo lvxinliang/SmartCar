@@ -2,8 +2,5 @@
 <resources>
     <string name="STATE_ERROR">状态异常, 无法发送命令 ....</string>
     <string name="app_name">SmartCar</string>
-    <string name="welcomePage">Smart Car</string>
-    <string name="menuPage">导航菜单</string>
-    <string name="settingsPage">设置选项</string>
-    <string name="aboutPage">关于我们</string>
+    <string name="app_title">Smart Car</string>
 </resources>
