@@ -3,6 +3,8 @@ package com.hanry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.graphics.Point;
+
 public class Utils {
 
 	public static String castByteToHexString(byte b) {
@@ -43,5 +45,12 @@ public class Utils {
 			return true;
 		}
 		return false;
+	}
+
+	public static int getOffsetValue(int src, int srcRange, int destRange) {
+		int value = Double.valueOf(Math.floor(destRange * src / srcRange)).intValue(); //获得比例值
+		value  = (value + 4) / 10; //取得对应的离散值
+		value = value > 18 ? 18 :value;
+		return value;
 	}
 }

@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -21,11 +22,18 @@ import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnTouchListener;
 
+import com.hanry.command.CategoryBit;
+import com.hanry.command.Command;
+import com.hanry.command.CommandBit;
+import com.hanry.command.ValueBit;
 
-public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
+public class MjpegView extends SurfaceView implements SurfaceHolder.Callback, OnTouchListener {
     public final static int POSITION_UPPER_LEFT = 9;
     public final static int POSITION_UPPER_RIGHT = 3;
     public final static int POSITION_LOWER_LEFT = 12;
@@ -49,12 +57,16 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     private int dispWidth;
     private int dispHeight;
     private int displayMode;
-    private static int mScreenWidth; 
-    private static int mScreenHeight;
     private boolean resume = false;
     private boolean mtakePic = false;//flag for take a picture
     
     private Context context;
+	private Point touchPointFirst;
+	private Point touchPointSecond;
+	private CommandSender commandSender;
+	private DisplayMetrics displayMetrics;
+	private int horValue;
+	private int verValue;
 
     public class MjpegViewThread extends Thread {
         private SurfaceHolder mSurfaceHolder;
@@ -155,7 +167,7 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
                                 	BroardCastResult(res, fName);
                                 	mtakePic = false;
                                 }
-                                destRect = destRect(mScreenWidth, mScreenHeight);
+                                destRect = destRect(displayMetrics.widthPixels, displayMetrics.heightPixels);
                                 c.drawColor(Color.WHITE);
                                 c.drawBitmap(bm, null, destRect, p);
                                 if (showFps) {
@@ -201,6 +213,12 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
         this.context = context;
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
+        this.displayMetrics = getResources().getDisplayMetrics(); 
+        this.setOnTouchListener(this);
+        this.touchPointFirst = new Point();	//点击点
+        this.touchPointSecond = new Point();	//点击点
+        this.verValue = 90;
+        this.horValue = 90;
         thread = new MjpegViewThread(holder, context);
         setFocusable(true);
         if (!resume) {
@@ -218,9 +236,6 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
             Log.i("MjpegView", "init successfully!");
         }
         setOverlayTextColor(Color.argb(127, 0x00, 0x00, 0x00));
-        DisplayMetrics dm = getResources().getDisplayMetrics(); 
-        mScreenWidth = dm.widthPixels; 
-        mScreenHeight = dm.heightPixels;
         setKeepScreenOn(true);
     }
 
@@ -394,4 +409,55 @@ public class MjpegView extends SurfaceView implements SurfaceHolder.Callback {
     	
     	return Constant.CAM_RES_OK;
     }
+    
+    private void handleViewTouch() {
+    	SlidingResult slidingResult = SlidingResult.parseSlidingResult(this.touchPointFirst, this.touchPointSecond, displayMetrics);
+    	if(slidingResult.getValue() != 0){
+    		Log.i("handleViewTouch", slidingResult.toString());
+    		if(slidingResult.getDirection().equals(SlidingResult.DIRECTION_HORIZONTAL)){
+    			this.horValue += slidingResult.getValue() / 5;
+    			this.horValue = this.horValue < 0 ? 0 : this.horValue;
+    			this.horValue = this.horValue > 180 ? 180 : this.horValue;
+    			this.commandSender.sendCommand(new Command(new CategoryBit(CategoryBit.SERVO), new CommandBit(CommandBit.CHANNEL0), new ValueBit(this.horValue, 0)));
+    		}else{
+    			this.verValue += slidingResult.getValue() / 5;
+    			this.verValue = this.verValue < 0 ? 0 : this.verValue;
+    			this.verValue = this.verValue > 180 ? 180 : this.verValue;
+    			this.commandSender.sendCommand(new Command(new CategoryBit(CategoryBit.SERVO), new CommandBit(CommandBit.CHANNEL1), new ValueBit(this.verValue, 0)));
+    		}
+    	}
+    }
+
+    public boolean onTouch(View v, MotionEvent event) {
+
+		switch (event.getAction()) {
+    	//手按下的时候  
+        case MotionEvent.ACTION_DOWN:
+        	touchPointFirst.x=(int)event.getX();  
+        	touchPointFirst.y=(int)event.getY();
+        	break;
+        //移动的时候
+        case MotionEvent.ACTION_MOVE:
+        	break;
+        case MotionEvent.ACTION_UP:
+        	touchPointSecond.x=(int)event.getX();  
+        	touchPointSecond.y=(int)event.getY();
+        	handleViewTouch();
+        	break;
+        default:
+        	break;
+    	}
+        return true;
+    }
+
+	public void setCommandSender(CommandSender commandSender) {
+		this.commandSender = commandSender;
+	}
+
+	public void doCameraReset() {
+		this.horValue = 90;
+		this.verValue = 90;
+		this.commandSender.sendCommand(new Command(new CategoryBit(CategoryBit.SERVO), new CommandBit(CommandBit.CHANNEL0), new ValueBit(this.horValue, 0)));
+		this.commandSender.sendCommand(new Command(new CategoryBit(CategoryBit.SERVO), new CommandBit(CommandBit.CHANNEL1), new ValueBit(this.verValue, 0)));
+	}
 }

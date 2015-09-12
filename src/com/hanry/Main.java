@@ -34,7 +34,7 @@ import com.hanry.component.LeftAndRightJoystickView;
 import com.hanry.component.OnFrontAndBackJoystickMoveListener;
 import com.hanry.component.OnLeftAndRightJoystickMoveListener;
 
-public class Main extends Activity {
+public class Main extends Activity implements CommandSender{
 	protected static final String TAG = "MainActivity";
 	private static final String CAMERA_VIDEO_URL_SUFFIX = ":8080/?action=stream";
 	private static final String CAMERA_VIDEO_URL_PREFIX = "http://";
@@ -85,6 +85,7 @@ public class Main extends Activity {
 	private int lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
 	private int lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
 	private Command lastCommand = null;
+	private FontAwesomeText cameraResetButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,12 +105,17 @@ public class Main extends Activity {
 		buttonLen.setOnClickListener(buttonLenClickListener);
 		buttonLen.setLongClickable(true);
 
-		enableGravityButton = (FontAwesomeText) findViewById(R.id.ButtonGravity);
 		TakePicture = (FontAwesomeText) findViewById(R.id.ButtonTakePic);
 		TakePicture.setOnClickListener(buttonTakePicClickListener);
+		
+		cameraResetButton = (FontAwesomeText) findViewById(R.id.ButtonCameraReset);
+		cameraResetButton.setOnClickListener(cameraResetButtonClickListener);
+		
+		enableGravityButton = (FontAwesomeText) findViewById(R.id.ButtonGravity);
 		enableGravityButton.setOnClickListener(new GravityButtonClickListener(
 				this));
 		backgroundView = (MjpegView) findViewById(R.id.mySurfaceView1);
+		backgroundView.setCommandSender(this);
 		frontAndBackJoystick = (FrontAndBackJoystickView) findViewById(R.id.frontAndBackJoystickView);
 		leftAndRightJoystick = (LeftAndRightJoystickView) findViewById(R.id.leftAndRightJoystickView);
 
@@ -337,6 +343,12 @@ public class Main extends Activity {
 				buttonLen.setTextColor(Color.YELLOW);
 			}
 
+		}
+	};
+	
+	private OnClickListener cameraResetButtonClickListener = new OnClickListener() {
+		public void onClick(View arg0) {
+			backgroundView.doCameraReset();
 		}
 	};
 
