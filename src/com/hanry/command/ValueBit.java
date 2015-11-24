@@ -14,15 +14,15 @@ import com.hanry.Utils;
 public class ValueBit {
 	// 方向类
 	public static final int SPEED0 = 0x0;
-	public static final int ANGLE0 = 0x0;
+	public static final int ANGLE0 = 90;
 	
 	//灯光类
 	public static final int TURNOFF = 0x0;
 	public static final int TURNON = 0x0F;
 	public static final int LIGHTENESS0 = 0x0;
 
-	private int highByte = SPEED0;
-	private int lowByte = ANGLE0;
+	private int highByte = 0;  //6~7 为高位
+	private int lowByte = 0;   //8~9 为低位
 	
 	public ValueBit(){
 

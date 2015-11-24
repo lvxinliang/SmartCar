@@ -202,7 +202,8 @@ public class LeftAndRightJoystickView extends View {
 
 	private void reportOnMoved() {
 		int currentDir = getDirection();
-		int currentPow = getPower();
+//		int currentPow = getPower();
+		int currentPow = getAngle();
 		if (currentDir != lastDirection
 				|| Math.abs(currentPow - lastPower) >= powerResolution) {
 			onJoystickMoveListener.onValueChanged(currentPow, currentDir);
@@ -300,6 +301,14 @@ public class LeftAndRightJoystickView extends View {
 
 	private int getPower() {
 		return (int) ((Math.abs(this.xPosition - centerX) / this.joystickRadius) * 100);
+	}
+	
+	private int getAngle() {
+		int rs = 0;
+		int start = (int) (this.centerX - this.joystickRadius);
+		rs = this.xPosition - start;
+		rs = (180 * rs) / (2* this.joystickRadius);
+		return rs;
 	}
 
 	private int getDirection() {

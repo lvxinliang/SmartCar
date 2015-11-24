@@ -86,6 +86,7 @@ public class Main extends Activity implements CommandSender{
 	private int lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
 	private Command lastCommand = null;
 	private FontAwesomeText cameraResetButton;
+	private ValueBit directionValueBit = new ValueBit(ValueBit.SPEED0, ValueBit.ANGLE0);
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -124,54 +125,50 @@ public class Main extends Activity implements CommandSender{
 					public void onValueChanged(int power, int direction) {
 						Command command = null;
 						if (power >= 3) {
+							directionValueBit.setHighByte(power);
+							//System.out.println("frontAndBackJoystick "+ power);
 							if (direction == FrontAndBackJoystickView.FRONT) {
 								if (lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.LEFT_FORWARD),
-											new ValueBit());
+											directionValueBit);
 								} else if (lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.RIGHT_FORWARD),
-											new ValueBit());
+											directionValueBit);
 								} else {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.FORWARD),
-											new ValueBit());
+											directionValueBit);
 								}
-								if (!command.equals(lastCommand)) {
-									sendCommand(command);
-									lastCommand = command;
-									lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
-								}
+								sendCommand(command);
+								lastFrontAndBackCommand = FrontAndBackJoystickView.FRONT;
 							} else if (direction == FrontAndBackJoystickView.BACK) {
 								if (lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT) {
 									command = new Command(
 											new CategoryBit(
 													CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.LEFT_BACK),
-											new ValueBit());
+											directionValueBit);
 								} else if (lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.RIGHT_BACK),
-											new ValueBit());
+											directionValueBit);
 								} else {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.BACK),
-											new ValueBit());
+											directionValueBit);
 								}
-								if (!command.equals(lastCommand)) {
-									sendCommand(command);
-									lastCommand = command;
-									lastFrontAndBackCommand = FrontAndBackJoystickView.BACK;
-								}
+							sendCommand(command);
+							lastFrontAndBackCommand = FrontAndBackJoystickView.BACK;
 							}
 
 						}
@@ -185,22 +182,19 @@ public class Main extends Activity implements CommandSender{
 						if (lastLeftAndRightCommand == LeftAndRightJoystickView.LEFT) {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.LEFT), new ValueBit());
+									CommandBit.LEFT), directionValueBit);
 						} else if (lastLeftAndRightCommand == LeftAndRightJoystickView.RIGHT) {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.RIGHT), new ValueBit());
+									CommandBit.RIGHT), directionValueBit);
 						} else {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.STOP), new ValueBit());
+									CommandBit.STOP), directionValueBit);
 						}
 
-						if (!command.equals(lastCommand)) {
-							sendCommand(command);
-							lastCommand = command;
-							lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
-						}
+						sendCommand(command);
+						lastFrontAndBackCommand = FrontAndBackJoystickView.ORIGIN;
 					}
 				});
 		leftAndRightJoystick
@@ -209,54 +203,50 @@ public class Main extends Activity implements CommandSender{
 					public void onValueChanged(int power, int direction) {
 						Command command = null;
 						if (power >= 3) {
+							directionValueBit.setLowByte(power);
+							//System.out.println("leftAndRightJoystick "+ power);
 							if (LeftAndRightJoystickView.LEFT == direction) {
 								if (lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.LEFT_FORWARD),
-											new ValueBit());
+											directionValueBit);
 								} else if (lastFrontAndBackCommand == FrontAndBackJoystickView.BACK) {
 									command = new Command(
 											new CategoryBit(
 													CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.LEFT_BACK),
-											new ValueBit());
+											directionValueBit);
 								} else {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.LEFT),
-											new ValueBit());
+											directionValueBit);
 								}
-								if (!command.equals(lastCommand)) {
-									sendCommand(command);
-									lastCommand = command;
-									lastLeftAndRightCommand = LeftAndRightJoystickView.LEFT;
-								}
+								sendCommand(command);
+								lastLeftAndRightCommand = LeftAndRightJoystickView.LEFT;
 							} else if (LeftAndRightJoystickView.RIGHT == direction) {
 								if (lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.RIGHT_FORWARD),
-											new ValueBit());
+											directionValueBit);
 								} else if (lastFrontAndBackCommand == FrontAndBackJoystickView.BACK) {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(
 													CommandBit.RIGHT_BACK),
-											new ValueBit());
+											directionValueBit);
 								} else {
 									command = new Command(new CategoryBit(
 											CategoryBit.DIRECTION),
 											new CommandBit(CommandBit.RIGHT),
-											new ValueBit());
+											directionValueBit);
 								}
-								if (!command.equals(lastCommand)) {
-									sendCommand(command);
-									lastCommand = command;
-									lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
-								}
+								sendCommand(command);
+								lastLeftAndRightCommand = LeftAndRightJoystickView.RIGHT;
 							}
 						}
 					}
@@ -269,22 +259,19 @@ public class Main extends Activity implements CommandSender{
 						if (lastFrontAndBackCommand == FrontAndBackJoystickView.FRONT) {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.FORWARD), new ValueBit());
+									CommandBit.FORWARD), directionValueBit);
 						} else if (lastFrontAndBackCommand == FrontAndBackJoystickView.BACK) {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.BACK), new ValueBit());
+									CommandBit.BACK), directionValueBit);
 						} else {
 							command = new Command(new CategoryBit(
 									CategoryBit.DIRECTION), new CommandBit(
-									CommandBit.STOP), new ValueBit());
+									CommandBit.STOP), directionValueBit);
 						}
 
-						if (!command.equals(lastCommand)) {
-							sendCommand(command);
-							lastCommand = command;
-							lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
-						}
+						sendCommand(command);
+						lastLeftAndRightCommand = LeftAndRightJoystickView.ORIGIN;
 					}
 				});
 
